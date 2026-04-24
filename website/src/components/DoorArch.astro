@@ -1,0 +1,91 @@
+---
+interface Props {
+  class?: string;
+  variant?: 'full' | 'divider' | 'mini';
+  ajar?: boolean;
+}
+
+const { class: className = '', variant = 'full', ajar = false } = Astro.props;
+---
+
+{variant === 'full' && (
+  <svg
+    class={className}
+    viewBox="0 0 240 300"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    {/* Outer frame */}
+    <path
+      d="M 20 290 L 20 120 A 100 100 0 0 1 220 120 L 220 290"
+      stroke="currentColor"
+      stroke-width="1.5"
+      fill="none"
+    />
+    {/* Inner door panel */}
+    <path
+      d={ajar
+        ? "M 40 290 L 40 130 A 80 80 0 0 1 140 90 L 140 290 Z"
+        : "M 40 290 L 40 130 A 80 80 0 0 1 200 130 L 200 290 Z"}
+      stroke="currentColor"
+      stroke-width="1"
+      fill="currentColor"
+      fill-opacity="0.06"
+    />
+    {/* Handle */}
+    <circle
+      cx={ajar ? 128 : 180}
+      cy="220"
+      r="3"
+      fill="currentColor"
+    />
+    {/* Panel detail lines */}
+    <line
+      x1="55" y1="180"
+      x2={ajar ? 125 : 185} y2="180"
+      stroke="currentColor"
+      stroke-width="0.75"
+      stroke-dasharray="2 4"
+      opacity="0.5"
+    />
+  </svg>
+)}
+
+{variant === 'divider' && (
+  <svg
+    class={className}
+    viewBox="0 0 200 40"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <line x1="0" y1="20" x2="70" y2="20" stroke="currentColor" stroke-width="0.75" opacity="0.4" />
+    <path
+      d="M 80 36 L 80 22 A 20 20 0 0 1 120 22 L 120 36"
+      stroke="currentColor"
+      stroke-width="1"
+      fill="none"
+    />
+    <circle cx="115" cy="30" r="1.5" fill="currentColor" />
+    <line x1="130" y1="20" x2="200" y2="20" stroke="currentColor" stroke-width="0.75" opacity="0.4" />
+  </svg>
+)}
+
+{variant === 'mini' && (
+  <svg
+    class={className}
+    viewBox="0 0 20 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M 2 23 L 2 10 A 8 8 0 0 1 18 10 L 18 23"
+      stroke="currentColor"
+      stroke-width="1.2"
+      fill="none"
+    />
+    <circle cx="14" cy="17" r="0.8" fill="currentColor" />
+  </svg>
+)}

@@ -1,0 +1,81 @@
+---
+import DoorArch from './DoorArch.astro';
+---
+
+<header class="relative overflow-hidden">
+  {/* Top nav — intentionally sparse */}
+  <nav class="max-w-6xl mx-auto px-6 sm:px-8 pt-8 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 group">
+      <DoorArch variant="mini" class="w-5 h-6 text-ink-900 transition-transform duration-300 group-hover:-translate-y-0.5" />
+      <span class="font-display text-xl font-medium tracking-tight">Macrosofty</span>
+    </a>
+    <div class="flex items-center gap-6 text-sm text-ink-700">
+      <a href="#editions" class="hover:text-ink-900 transition-colors">Editions</a>
+      <a href="#can-do" class="hidden sm:inline hover:text-ink-900 transition-colors">What it does</a>
+      <a href="#faq" class="hover:text-ink-900 transition-colors">FAQ</a>
+      <a href="https://github.com/macrosofty" class="hidden sm:inline hover:text-ink-900 transition-colors font-mono text-xs">github</a>
+    </div>
+  </nav>
+
+  <div class="max-w-6xl mx-auto px-6 sm:px-8 pt-20 sm:pt-32 pb-24 sm:pb-32 relative">
+    {/* Section index — editorial cookbook feel */}
+    <div class="flex items-center gap-3 text-sm font-mono text-ink-500 mb-10 animate-fade-in">
+      <span>00</span>
+      <span class="w-8 h-px bg-ink-400"></span>
+      <span class="tracking-widest uppercase text-xs">Front door</span>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8 items-end">
+      <div class="col-span-12 lg:col-span-8">
+        <h1 class="font-display text-[clamp(3rem,9vw,7rem)] leading-[0.95] tracking-tight font-medium animate-fade-up">
+          A Linux that<br />
+          <span class="italic" style="font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;">doesn't</span> suck.
+        </h1>
+
+        <p class="mt-10 max-w-xl text-lg sm:text-xl leading-relaxed text-ink-700 animate-fade-up" style="animation-delay: 120ms;">
+          No ads. No accounts. No nonsense. Just a computer that respects you.
+        </p>
+
+        <p class="mt-4 max-w-xl text-base text-ink-600 italic font-display animate-fade-up" style="animation-delay: 180ms;">
+          "We open the door — not just a window to peek through."
+        </p>
+
+        <p class="mt-3 max-w-xl text-sm text-ink-500 font-mono animate-fade-up" style="animation-delay: 210ms;">
+          <span class="text-broth">macro</span> · big &nbsp;·&nbsp; <span class="text-broth">softy</span> · easy &nbsp;·&nbsp; <span class="italic font-display text-ink-700 normal-case">Become a Macrosofty.</span>
+        </p>
+
+        <div class="mt-12 flex flex-wrap items-center gap-4 animate-fade-up" style="animation-delay: 240ms;">
+          <a href="#editions" class="btn-primary">
+            See the editions
+            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none"><path d="M3 8 H13 M9 4 L13 8 L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#download" class="btn-ghost">
+            Download
+          </a>
+          <span class="font-mono text-xs text-ink-500 ml-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-saffron align-middle mr-1.5 animate-pulse"></span>
+            pre-release · coming soon
+          </span>
+        </div>
+      </div>
+
+      {/* Door illustration — anchored to the right, generous and intentional */}
+      <div class="col-span-12 lg:col-span-4 hidden lg:block animate-fade-in" style="animation-delay: 400ms;">
+        <DoorArch variant="full" ajar={true} class="w-full max-w-[280px] mx-auto text-broth" />
+      </div>
+    </div>
+
+    {/* Marquee-ish trust signals — small, calm */}
+    <div class="mt-24 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs font-mono uppercase tracking-widest text-ink-500 animate-fade-in" style="animation-delay: 500ms;">
+      <span>Built on Universal Blue</span>
+      <span aria-hidden="true" class="text-ink-400">·</span>
+      <span>Fedora atomic</span>
+      <span aria-hidden="true" class="text-ink-400">·</span>
+      <span>KDE Plasma</span>
+      <span aria-hidden="true" class="text-ink-400">·</span>
+      <span>Apache 2.0</span>
+      <span aria-hidden="true" class="text-ink-400">·</span>
+      <span>Signed with cosign</span>
+    </div>
+  </div>
+</header>

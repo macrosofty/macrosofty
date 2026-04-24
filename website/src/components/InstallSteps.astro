@@ -1,0 +1,79 @@
+---
+const steps = [
+  {
+    num: '01',
+    title: 'Download the ISO',
+    body: "Pick the edition that matches you. Each ISO is about 4-6 GB. We host the files on SourceForge — free and mirrored worldwide. Direct links skip the interstitials.",
+    time: '~2 minutes (on good wifi)',
+    screenshot: 'SCREENSHOT: Macrosofty download page showing four edition buttons, each with a clear size estimate and SHA256 link below.',
+  },
+  {
+    num: '02',
+    title: 'Write it to a USB stick',
+    body: 'Balena Etcher (free) does this on any OS. Plug in an 8 GB or larger USB stick, pick the ISO, click "Flash." About 5 minutes.',
+    time: '~5 minutes',
+    screenshot: 'SCREENSHOT: Balena Etcher UI mid-flash, target drive clearly labeled "Macrosofty Hearty".',
+  },
+  {
+    num: '03',
+    title: 'Boot the installer, click through',
+    body: 'Restart your computer with the USB plugged in. Press F12/F10/Esc (varies by PC) to pick boot device. Choose the USB. Click through the installer. Make a username. That\'s it.',
+    time: '~10 minutes',
+    screenshot: 'SCREENSHOT: Macrosofty first-boot welcome wizard, clean and warm, "The door is open" tagline visible.',
+  },
+];
+---
+
+<section id="how-easy" class="py-24 sm:py-32 bg-ink-900 text-cream-100 relative overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    <div class="flex items-center gap-3 text-sm font-mono text-cream-200/60 mb-6">
+      <span>04</span>
+      <span class="w-8 h-px bg-cream-200/40"></span>
+      <span class="tracking-widest uppercase text-xs">How easy is it?</span>
+    </div>
+
+    <h2 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] tracking-tight mb-6 max-w-3xl text-cream-50">
+      Three steps.<br />
+      <span class="italic text-saffron">About fifteen minutes.</span>
+    </h2>
+
+    <p class="max-w-prose text-lg text-cream-200/80 leading-relaxed mb-20">
+      You don't need a tutorial. You don't need a friend on standby. You don't need to "back up to the cloud first." But do back up your important files before installing any OS. That part's on you, and it's the only part.
+    </p>
+
+    <ol class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+      {steps.map((step, idx) => (
+        <li class="flex flex-col">
+          {/* Screenshot placeholder — clearly labeled, replace on shoot day */}
+          <div
+            class="relative aspect-[4/3] mb-6 rounded-sm overflow-hidden border border-cream-200/10"
+            style={`background: linear-gradient(135deg, ${['#C66B3D20', '#E89A2B25', '#8B5A3C30'][idx]} 0%, rgba(26,22,18,0.6) 100%);`}
+          >
+            <div class="absolute inset-0 flex flex-col justify-between p-4">
+              <span class="font-mono text-[10px] uppercase tracking-widest text-cream-100/40">
+                [ screenshot placeholder ]
+              </span>
+              <p class="text-[11px] text-cream-100/60 italic font-display leading-tight">
+                {step.screenshot}
+              </p>
+            </div>
+          </div>
+
+          <div class="font-display text-6xl text-saffron italic font-medium mb-2">{step.num}</div>
+          <h3 class="font-display text-2xl md:text-3xl text-cream-50 mb-3 font-medium tracking-tight">{step.title}</h3>
+          <p class="text-cream-200/80 leading-relaxed text-[0.95rem] mb-4">{step.body}</p>
+          <span class="text-xs font-mono uppercase tracking-widest text-saffron-light mt-auto">{step.time}</span>
+        </li>
+      ))}
+    </ol>
+
+    <div class="mt-16 pt-10 border-t border-cream-200/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <p class="text-cream-200/80 max-w-md text-[0.95rem] leading-relaxed">
+        If an update ever goes sideways: reboot, pick the previous version at the boot menu, you're back on what worked. That's architectural, not a promise we made up.
+      </p>
+      <a href="#faq" class="text-saffron hover:text-saffron-light transition-colors font-display italic text-lg">
+        Still nervous? Read the FAQ →
+      </a>
+    </div>
+  </div>
+</section>

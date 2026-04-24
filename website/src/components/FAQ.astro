@@ -1,0 +1,90 @@
+---
+const faqs = [
+  {
+    q: 'Will my stuff still work?',
+    a: "Webpages — yes. Netflix/Spotify/YouTube/Zoom/Teams/Discord/Slack — yes. Office files — yes, OnlyOffice opens them with very good fidelity. Printers and scanners from the last decade — almost always. Games on Steam — mostly yes (check protondb.com). Games with kernel anti-cheat like Valorant, Fortnite multiplayer, CoD — no, and we can't fix that. Adobe Creative Cloud desktop apps — no, but there are alternatives.",
+  },
+  {
+    q: 'Will it be hard to install?',
+    a: "If you've ever plugged in a USB stick and clicked \"Next, Next, Next\" on an installer, you've done this before. About 15 minutes start to finish. We'll publish a video walkthrough before launch.",
+  },
+  {
+    q: 'What if I don\'t like it?',
+    a: "It's free and we don't track you, so the only thing you've spent is your time. Put your old OS back the same way you installed this one. No grudges. We'd rather you find the right OS for you than pretend ours is it.",
+  },
+  {
+    q: 'Will it break when it updates?',
+    a: 'No. Every update swaps a full new system image in, keeps the old one around, and lets you reboot to the previous one if anything goes wrong. This is how the Steam Deck works. It is architectural, not a promise we hope to keep.',
+  },
+  {
+    q: 'Will you sell my data?',
+    a: 'No. There is nothing to sell — there is no telemetry, no accounts, no phone-home, no opt-in box to check. The source code is public — check. This is a design choice, not a policy that could change.',
+  },
+  {
+    q: 'Will my printer work?',
+    a: 'If it was made in the last decade and speaks IPP Everywhere or Mopria (most do), yes — plug in, it shows up. Older or weirder printers sometimes need a manual driver install; we\'ve written a guide.',
+  },
+  {
+    q: 'Can I play Valorant / Fortnite / CoD?',
+    a: "No — not because of anything we're doing, but because those games require a Windows kernel driver for their anti-cheat. No Linux distribution can run them, and the game publishers have explicitly chosen to block Linux. Check areweanticheatyet.com for the live list. Most non-kernel-anti-cheat games work great.",
+  },
+  {
+    q: 'What about Microsoft Office?',
+    a: "The desktop apps are Windows/Mac-only. But: Office on the web (office.com) works perfectly in any browser on Macrosofty. For offline editing, OnlyOffice opens .docx / .xlsx / .pptx with very high fidelity. LibreOffice also works. Most people who switch don't miss desktop Office after a week.",
+  },
+  {
+    q: 'Can it run on my old laptop?',
+    a: 'Check the edition: Broth runs on 4 GB RAM and an x86-64 CPU from around 2012 onwards. Hearty/Chunky/Feast want 8 GB. If Fedora 42 supports the hardware, we support it — we don\'t maintain a separate compat list.',
+  },
+  {
+    q: 'Who makes this?',
+    a: "A small team that got tired of the door company only selling windows, and tired of telling their relatives \"just use Linux\" without giving them a Linux that wouldn't confuse them. Our docs and replies read the way a friend would explain it at a braai — not the way a vendor would explain it at a conference. We're not a company. We're not for sale. We might take tips if you're feeling generous, but there are no ads, no affiliate links, no accounts, and no premium tier.",
+  },
+  {
+    q: 'Why the name "Macrosofty"?',
+    a: "Macro means big. Softy means easy. Big and easy — that's the whole pitch. It also sounds a little bit like a company whose name we're not saying, but we're not going to spell that out. The joke works because everyone gets it without us pointing at it.",
+  },
+];
+---
+
+<section id="faq" class="py-24 sm:py-32 relative">
+  <div class="max-w-4xl mx-auto px-6 sm:px-8">
+    <div class="flex items-center gap-3 text-sm font-mono text-ink-500 mb-6">
+      <span>05</span>
+      <span class="w-8 h-px bg-ink-400"></span>
+      <span class="tracking-widest uppercase text-xs">FAQ</span>
+    </div>
+
+    <h2 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] tracking-tight mb-6">
+      The questions<br />
+      <span class="italic text-broth">everyone asks first.</span>
+    </h2>
+    <p class="max-w-prose text-lg text-ink-700 leading-relaxed mb-16">
+      Nothing below is marketing speak. If the answer is "no" or "it depends" we'll say so.
+    </p>
+
+    <div class="divide-y divide-cream-300 border-y border-cream-300">
+      {faqs.map((faq) => (
+        <details class="group py-5">
+          <summary class="flex items-start justify-between gap-4 cursor-pointer list-none">
+            <h3 class="font-display text-xl md:text-2xl text-ink-900 font-medium tracking-tight pr-4 leading-snug">
+              {faq.q}
+            </h3>
+            <span class="flex-none w-10 h-10 rounded-full border border-ink-300 flex items-center justify-center text-ink-700 group-hover:border-ink-900 group-hover:text-ink-900 transition-colors mt-1" aria-hidden="true">
+              <svg class="w-4 h-4 transition-transform duration-300 group-open:rotate-45" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2 V14 M2 8 H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </summary>
+          <div class="pt-4 pr-14">
+            <p class="text-ink-700 leading-relaxed">{faq.a}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-12 text-center text-ink-600 italic font-display text-lg">
+      Couldn't find yours? Ask in <a href="https://github.com/macrosofty/macrosofty/discussions" class="prose-link">GitHub Discussions</a> — we read all of them.
+    </p>
+  </div>
+</section>

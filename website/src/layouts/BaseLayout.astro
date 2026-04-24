@@ -1,0 +1,44 @@
+---
+import '~/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Macrosofty — A Linux that doesn\'t suck',
+  description = 'No ads. No accounts. No nonsense. Just a computer that respects you. We open the door — not just a window to peek through.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#F5EFE6" />
+  <meta name="generator" content={Astro.generator} />
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  {/* Open Graph — plain, no tracking pixels */}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:locale" content="en_US" />
+
+  {/* Explicit no-tracking signal. We mean it. */}
+  <meta name="robots" content="index, follow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  {/* An easter egg for anyone who "view-source"s. */}
+  <!-- The door is always open. No analytics, no trackers, no cookies. -->
+</head>
+<body>
+  <slot />
+</body>
+</html>

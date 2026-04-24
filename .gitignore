@@ -1,0 +1,31 @@
+# Node / Astro (website)
+website/node_modules/
+website/dist/
+website/.astro/
+website/.cache/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment
+.env
+.env.local
+.env.*.local
+.env.production
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Build artifacts (distro — will come later)
+dist/
+out/
+build/
+*.iso

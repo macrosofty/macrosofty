@@ -1,0 +1,199 @@
+@import '@fontsource-variable/fraunces/index.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --grain-opacity: 0.035;
+  }
+
+  html {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    color: theme('colors.ink.900');
+    background: theme('colors.cream.100');
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'ss01', 'ss02';
+  }
+
+  body {
+    position: relative;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232, 154, 43, 0.08), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(139, 90, 60, 0.06), transparent 70%),
+      theme('colors.cream.100');
+  }
+
+  /* Paper grain overlay — subtle, fixed, never draws attention to itself */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+  }
+
+  main, header, footer, section {
+    position: relative;
+    z-index: 2;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces Variable', ui-serif, Georgia, serif;
+    font-variation-settings: 'opsz' 144, 'SOFT' 50, 'WONK' 0;
+    letter-spacing: -0.015em;
+    color: theme('colors.ink.900');
+  }
+
+  h1 {
+    font-weight: 500;
+    line-height: 1.05;
+  }
+
+  h2 {
+    font-weight: 500;
+    line-height: 1.1;
+  }
+
+  /* Prose body text */
+  p {
+    color: theme('colors.ink.700');
+  }
+
+  /* Section rule — a thin editorial line */
+  .rule {
+    height: 1px;
+    background: linear-gradient(to right, transparent, theme('colors.ink.400'), transparent);
+  }
+
+  /* Numbered section badge */
+  .section-num {
+    font-family: 'Fraunces Variable', serif;
+    font-variation-settings: 'opsz' 144, 'SOFT' 100;
+    font-style: italic;
+    color: theme('colors.broth.DEFAULT');
+  }
+
+  /* Link underline treatment */
+  a.prose-link {
+    color: theme('colors.broth.dark');
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 150ms ease;
+  }
+  a.prose-link:hover {
+    color: theme('colors.saffron.dark');
+  }
+
+  /* Focus visible — accessible and warm */
+  :focus-visible {
+    outline: 2px solid theme('colors.saffron.DEFAULT');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Reduce motion respectfully */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Door arch used as section threshold — a subtle arched divider */
+  .arch-threshold {
+    display: block;
+    width: 120px;
+    height: 60px;
+    margin-inline: auto;
+    color: theme('colors.broth.DEFAULT');
+    opacity: 0.6;
+  }
+
+  /* Primary CTA — confident, warm */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.6rem;
+    background: theme('colors.ink.900');
+    color: theme('colors.cream.50');
+    font-weight: 500;
+    font-size: 1rem;
+    border-radius: 999px;
+    transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 200ms;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 4px 12px rgba(26, 22, 18, 0.08);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05), 0 8px 20px rgba(26, 22, 18, 0.15);
+    background: theme('colors.ink.800');
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.9rem 1.6rem;
+    background: transparent;
+    color: theme('colors.ink.900');
+    font-weight: 500;
+    font-size: 1rem;
+    border-radius: 999px;
+    border: 1px solid theme('colors.ink.400');
+    transition: all 200ms;
+  }
+  .btn-ghost:hover {
+    border-color: theme('colors.ink.900');
+    background: theme('colors.cream.50');
+  }
+
+  /* Edition card — feels hand-crafted, slight hover reveal */
+  .edition-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.75rem 1.75rem;
+    background: theme('colors.cream.50');
+    border: 1px solid theme('colors.cream.300');
+    border-radius: 4px;
+    transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 300ms;
+    overflow: hidden;
+  }
+  .edition-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: currentColor;
+    opacity: 0.85;
+  }
+  .edition-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 40px -20px rgba(26, 22, 18, 0.18);
+  }
+
+  /* Stagger children helper via CSS custom property */
+  .stagger > * {
+    opacity: 0;
+    animation: fadeUp 800ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(var(--stagger-delay, 80ms) * var(--i, 0));
+  }
+}

@@ -1,0 +1,24 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Hero from '~/components/Hero.astro';
+import PersonaGrid from '~/components/PersonaGrid.astro';
+import EditionsSection from '~/components/EditionsSection.astro';
+import CanDoSection from '~/components/CanDoSection.astro';
+import InstallSteps from '~/components/InstallSteps.astro';
+import FAQ from '~/components/FAQ.astro';
+import DownloadSection from '~/components/DownloadSection.astro';
+import SiteFooter from '~/components/SiteFooter.astro';
+---
+
+<BaseLayout>
+  <Hero />
+  <main>
+    <PersonaGrid />
+    <EditionsSection />
+    <CanDoSection />
+    <InstallSteps />
+    <FAQ />
+    <DownloadSection />
+  </main>
+  <SiteFooter />
+</BaseLayout>

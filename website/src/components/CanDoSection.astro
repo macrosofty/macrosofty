@@ -1,0 +1,90 @@
+---
+const canDo = [
+  { title: 'Browse the web', body: 'Firefox out of the box. Chrome, Brave, Vivaldi a click away. Everything you open in a browser now works the same.' },
+  { title: 'Email, calendar, contacts', body: 'Thunderbird, Evolution, Gnome Online Accounts. Gmail, Outlook.com, iCloud, Fastmail — all just work over IMAP/CalDAV.' },
+  { title: 'Office documents', body: 'OnlyOffice and LibreOffice open .docx, .xlsx, .pptx without breaking formatting in most cases. The web versions of the big office suites also work.' },
+  { title: 'Video calls', body: 'Zoom, Teams, Meet, Discord, Slack, Jitsi — all via browser or native app. Camera and microphone work without you reading a tutorial.' },
+  { title: 'Stream everything', body: 'Netflix, YouTube, Disney+, Spotify, Apple Music web, Prime Video, Showmax. DRM-protected content included.' },
+  { title: 'Print and scan', body: 'Most printers from the last decade are auto-detected. IPP Everywhere and Mopria are built in. Scanners that speak SANE (most of them) are set up on plug-in.' },
+  { title: 'Play games', body: 'Steam + Proton runs most Windows games unchanged. Epic, GOG, Itch through Heroic. Controllers, Steam Deck-style settings.', emphasis: true },
+  { title: 'Edit photos and videos', body: 'Darktable, GIMP, Krita, Kdenlive, DaVinci Resolve (free version). Not Photoshop, but good enough for most people most of the time.' },
+  { title: 'Write code', body: 'VS Code, JetBrains, Neovim, Cursor, containers, git, docker/podman. Chunky ships the dev tools; other editions pick them up with one command.' },
+  { title: 'Sync your files', body: 'Nextcloud, Dropbox, Google Drive, OneDrive (yes, via rclone). KDE file manager mounts them as folders.' },
+];
+
+const cannotDo = [
+  { title: 'Adobe Creative Cloud', body: 'Photoshop, Premiere, Lightroom, Illustrator — these are Windows/Mac-only. Web versions are limited. Alternatives: Krita (painting), GIMP (photo), DaVinci Resolve (video), Inkscape (vector).' },
+  { title: 'Some competitive games with kernel anti-cheat', body: 'Valorant, Fortnite multiplayer, Apex Legends (post-2024), CoD/Warzone, Destiny 2, PUBG, Tarkov — these block Linux at the kernel level. Not our fight — check areweanticheatyet.com for the live list.' },
+  { title: 'Microsoft Office desktop apps', body: 'Word, Excel, PowerPoint desktop versions are Windows/Mac-only. The web versions work fine. For offline: OnlyOffice opens .docx natively with very good fidelity.' },
+  { title: 'Certain niche pro software', body: 'AutoCAD, SolidWorks, 3ds Max, Pro Tools, some audio plug-in hosts — Windows-only. If your profession depends on one of these and it doesn\'t have a Linux version, Macrosofty can\'t fix that.' },
+  { title: 'iCloud Photos sync', body: 'Apple doesn\'t make a Linux client. You can still access via iCloud.com, and export to a folder. No native sync.' },
+  { title: 'Old enterprise apps requiring Active Directory login', body: 'If your work laptop has to join a domain, ask IT first. This is a real thing. Sometimes it works via SSSD. Sometimes it doesn\'t. We\'ll tell you honestly.' },
+];
+---
+
+<section id="can-do" class="py-24 sm:py-32 relative">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    <div class="flex items-center gap-3 text-sm font-mono text-ink-500 mb-6">
+      <span>03</span>
+      <span class="w-8 h-px bg-ink-400"></span>
+      <span class="tracking-widest uppercase text-xs">What it does &amp; what it doesn't</span>
+    </div>
+
+    <h2 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] tracking-tight mb-6 max-w-3xl">
+      We'll tell you the truth<br />
+      <span class="italic text-broth">before you install it.</span>
+    </h2>
+    <p class="max-w-prose text-lg text-ink-700 leading-relaxed mb-20">
+      Marketing sites usually bury this. We'd rather waste 60 seconds of your time now than make you angry on install day.
+    </p>
+
+    {/* Two columns — equal weight, no "cons" shame */}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+      {/* CAN DO */}
+      <div>
+        <div class="flex items-center gap-3 mb-8">
+          <span class="w-10 h-10 rounded-full bg-bubbles/15 flex items-center justify-center">
+            <svg class="w-5 h-5 text-bubbles" viewBox="0 0 20 20" fill="none"><path d="M4 10 L8 14 L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <h3 class="font-display text-2xl md:text-3xl font-medium tracking-tight">
+            This works. Like, properly.
+          </h3>
+        </div>
+
+        <ul class="space-y-5">
+          {canDo.map(item => (
+            <li class={`border-l-2 pl-5 ${item.emphasis ? 'border-feast' : 'border-cream-300'}`}>
+              <p class="font-display text-lg font-medium text-ink-900 mb-1">{item.title}</p>
+              <p class="text-ink-600 leading-relaxed text-[0.95rem]">{item.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* CANNOT DO */}
+      <div>
+        <div class="flex items-center gap-3 mb-8">
+          <span class="w-10 h-10 rounded-full bg-chunky/15 flex items-center justify-center">
+            <svg class="w-5 h-5 text-chunky" viewBox="0 0 20 20" fill="none"><path d="M6 6 L14 14 M14 6 L6 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </span>
+          <h3 class="font-display text-2xl md:text-3xl font-medium tracking-tight">
+            Things we can't help with.
+          </h3>
+        </div>
+
+        <ul class="space-y-5">
+          {cannotDo.map(item => (
+            <li class="border-l-2 border-cream-300 pl-5">
+              <p class="font-display text-lg font-medium text-ink-900 mb-1">{item.title}</p>
+              <p class="text-ink-600 leading-relaxed text-[0.95rem]">{item.body}</p>
+            </li>
+          ))}
+        </ul>
+
+        <p class="mt-10 pl-5 border-l-2 border-saffron text-sm text-ink-600 italic leading-relaxed">
+          Not sure whether your thing works? Ask us in GitHub Discussions before you install. We'll check, honestly, and tell you. If a whole category is broken we'll say "not recommended." We'd rather lose a download than waste your Saturday.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
