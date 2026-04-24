@@ -44,7 +44,7 @@ const personas = [
   <div class="max-w-6xl mx-auto px-6 sm:px-8">
     <div class="flex items-center gap-3 text-sm font-mono text-ink-500 mb-6">
       <span>01</span>
-      <span class="w-8 h-px bg-ink-400"></span>
+      <span class="w-8 h-px bg-broth-light opacity-60"></span>
       <span class="tracking-widest uppercase text-xs">Is this for you?</span>
     </div>
 
@@ -60,10 +60,10 @@ const personas = [
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 stagger" style="--stagger-delay: 100ms;">
       {personas.map((p, idx) => (
         <article
-          class="group relative bg-cream-50 border border-cream-300 p-7 md:p-8 hover:border-ink-900 transition-colors duration-300"
+          class="group relative soft-card p-7 md:p-9"
           style={`--i: ${idx};`}
         >
-          <DoorArch variant="mini" class={`w-4 h-5 mb-4 ${p.color}`} />
+          <DoorArch variant="mini" class={`w-5 h-6 mb-4 ${p.color}`} />
           <blockquote class="font-display text-xl md:text-2xl leading-snug text-ink-900 mb-4 italic">
             "{p.quote}"
           </blockquote>
@@ -79,9 +79,9 @@ const personas = [
         </article>
       ))}
 
-      {/* Fifth card — the gentle "you might not be the target" card */}
-      <article class="md:col-span-2 relative bg-ink-900 text-cream-100 p-7 md:p-10 flex flex-col md:flex-row md:items-center gap-6">
-        <DoorArch variant="mini" class="w-5 h-6 text-saffron flex-none" />
+      {/* Fifth card — the gentle "not for you, and that's fine" card */}
+      <article class="md:col-span-2 relative bg-ink-900 text-cream-100 p-8 md:p-10 rounded-softer flex flex-col md:flex-row md:items-center gap-6 shadow-puff-lg">
+        <DoorArch variant="mini" class="w-6 h-7 text-saffron flex-none" />
         <div class="flex-1">
           <p class="font-display text-xl md:text-2xl leading-snug mb-2 italic">
             "I love picking my own distro. I run Arch, by the way."

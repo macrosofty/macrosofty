@@ -84,6 +84,18 @@ Built on Bazzite's work — we owe them a beer.
 
 *The "Ultimate" edition. Slapped with a gamer skin by the door company, sold as a premium tier. Here, it's just the fourth download button.*
 
+### 🐰 Macrosofty Bokkie — **tentative, post-v1**
+**For ARM machines: Pi 5, Rockchip SBCs, ARM laptops.**
+
+Fedora Kinoite already runs beautifully on aarch64 hardware. Bokkie would be a minimal Hearty/Broth-equivalent edition for people giving their old Pi 5 or Rockchip board a second life.
+
+**Not shipping in v1.** Three honest reasons:
+1. Our Universal Blue inheritance path (Bluefin / Aurora / Bazzite) is x86-64 only today. A Bokkie would have to fork Fedora Kinoite directly — more of our own plumbing, less inherited.
+2. We want the four x86 editions stable first.
+3. Bokkie will **never** include Feast. Steam, Proton, and Wine are x86 at heart; ARM translators (box64, FEX) aren't the polished, it-just-works experience we promise.
+
+If there's demand in GitHub Discussions after v1 launches, Bokkie moves up the list. Until then: "still coming."
+
 ## The promises
 
 1. **Updates don't break.** Every update swaps a full image. If anything goes wrong, one reboot rolls you back. This is the same trick the Steam Deck uses.
@@ -92,14 +104,30 @@ Built on Bazzite's work — we owe them a beer.
 4. **We inherit, we don't reinvent.** Macrosofty sits on Universal Blue and Fedora atomic desktop. Every fix upstream ships, we ship. Forever.
 5. **The recipe is public.** You can read it, fork it, audit it, build your own version with different opinions. Nothing is hidden.
 6. **We'll tell you honestly when something won't work.** No marketing-speak. No "compatible" weasel words. If your Windows-only CAD package isn't going to run, we say so.
+7. **Make it yours, in one click.** The system is opinionated — atomic, curated, locked-down where it matters. The *desktop* is yours. Colour palette, wallpaper, cursor size, text size, icon pack — one click, no terminal, no config files. A gran who wants a pink desktop with her dog on the wallpaper can have both, in the first five minutes, without asking anyone. We handle the plumbing; you handle the paint.
+
+We don't reinvent the wheel — **we make it easy to customise what Linux already does**. KDE Plasma is already enormously flexible. We ship a friendly "Make it yours" front door on top of it, curate a small gallery of presets, and leave the power-user levers (global themes, Konsave profiles, Kvantum, .desktop files) accessible for anyone who wants to dig deeper.
 
 ## Voice and tone
 
-- **Conversational, dry, warm.** Like a competent friend explaining the thing at a braai.
+- **Conversational, dry, warm.** Like a competent friend explaining the thing at a braai — *not* a vendor explaining it at a conference.
+- **South African flavour, sparingly.** The founder is South African; one *lekker*, one *howzit*, one *boet* per page is flavour. Every sentence would be cosplay.
 - **Never corporate, never preachy.** No "empower your digital journey" nonsense.
 - **Honest when we don't know.** "Experimental" means experimental. "Not supported" means not supported.
 - **No smug Linux evangelism.** We're here to get people off the thing they don't like, not lecture them about free software for 45 minutes.
 - **The joke is in the name, the tagline, and the absence.** Don't over-explain it.
+- **Peace, not war.** We're not here to attack the rival — we're an alternative for people who want one. No shame, no lecture, no conversion pressure. If someone's current OS works for them, great.
+
+### The supporting slogans (use these verbatim or in spirit)
+
+- **"A Linux that doesn't suck."** — the headline.
+- **"Free for everyone. Forever."** — the promise, repeated often.
+- **"We open the door — not just a window to peek through."** — the metaphor.
+- **"Peace, not war."** — the stance.
+- **"Become a Macrosofty."** — affectionate self-ID for users.
+- **"Macro means big. Softy means easy. Big and easy."** — the name unpacked (only in FAQ; never elsewhere).
+- **"Explained at a braai, not in a board meeting."** — the voice.
+- **"Made with lekker in Mzansi."** — the attribution.
 
 ## Landing page — conversion-friendly flow
 
@@ -186,7 +214,7 @@ Four big buttons, labelled clearly, with a short description under each. A fallb
 | Image registry | `ghcr.io/macrosofty/<edition>` | Free, unlimited pulls, standard in this ecosystem |
 | ISO builder | `bootc-image-builder` | Official tool for OCI → ISO, actively maintained |
 | **ISO hosting** | **SourceForge** | **Free, mirrored worldwide, no bandwidth cost to us. Honest caveat: SF had adware scandals ~2013–2016 and Linux community memory is long; we address this in the FAQ by linking direct-download URLs that skip SF's UI where possible.** |
-| Website | Static (Astro + Tailwind), hosted on Cloudflare Pages | Free tier fits comfortably, no tracking |
+| Website | Static (**Astro 5.x + Tailwind 3.x via `@astrojs/tailwind`**) on Cloudflare Pages | Free tier, zero JS shipped to browser, self-hosted fonts (no external CDN calls, no tracking). Tailwind 4 + `@tailwindcss/vite` migration is a future job — low priority |
 | License | Apache 2.0 | Matches Universal Blue upstream |
 | Upstream donors | Bluefin (Hearty), Bluefin-DX (Chunky), minimal Fedora atomic (Broth), Bazzite (Feast) | Inherit, don't reinvent |
 | Desktop environment | **KDE Plasma** (all editions) | Cohesion across editions; Bazzite's strong KDE work gives us a known-good gaming base; KDE's Windows-like layout lowers the learning curve for newcomers |
@@ -275,6 +303,7 @@ Not the hill to be a hero on for v1, but also not negotiable:
 - We don't maintain a hardware compat DB. The Fedora one is the source of truth.
 - Community-contributed "known to work / known to fail" list in GitHub Discussions, not in the main repo (low maintenance).
 - Minimum spec we publish: 4 GB RAM (Broth), 8 GB RAM (Hearty/Chunky/Feast), x86-64-v3 CPU (mostly anything from 2015+), 30 GB disk, UEFI boot. We test against a couple of reference machines.
+- **Architecture:** v1 is x86-64 only. aarch64 (Pi 5, Rockchip SBCs, Apple Silicon via Asahi) comes later as the tentative **Bokkie** edition — forked directly from Fedora Kinoite aarch64, not from Universal Blue (they don't publish ARM images). Bokkie will never include Feast — Steam / Proton / Wine are x86-native and ARM translators (box64, FEX-emu) aren't good enough to earn our "just works" promise.
 
 ### Firstboot wizard — under 3 minutes, no account
 
@@ -303,11 +332,17 @@ The welcome app lives in the system tray after setup — optional re-run of pick
 
 (Things we don't need to decide right now, parked.)
 
-1. **Domain name.** `macrosofty.io` / `macrosofty.org` / `macrosofty.com` — whichever is available and cheap. Squatted names get a new project name, not a fight.
-2. **GitHub org name.** Probably `macrosofty` if free, else `macrosofty-os`.
-3. **Trademark sanity check.** Worth 30 minutes of Google + USPTO/EUIPO search once the name is locked in.
+1. **Domain name.** Availability confirmed on 2026-04-24: `.org`, `.com`, `.io`, `.net`, `.dev`, `.co.za` — all available for registration. Recommendation: `macrosofty.org` as primary (matches love-project posture); `.com` as optional defensive grab.
+2. **GitHub org name.** `github.com/macrosofty` is a dormant user account, not an org, so we can try for it. `github.com/macrosofty-os` is available. Pick one and register.
+3. **Trademark sanity check.** Done on 2026-04-24: no registered "Macrosofty" mark; only hits are a dormant Twitter handle from 2010 and satirical references. Microsoft parody risk exists but is low for a non-commercial love project.
 4. **Feast naming second-guess.** Does "Feast" clearly signal "gaming" to an outsider? Low-priority; we can A/B with taglines on the download page.
-5. **Second DE variant (GNOME).** Not for v1. Maybe later if there's user demand.
+5. **Bokkie (ARM) commitment.** Post-v1 stretch. Fedora Kinoite aarch64 is the base (UBlue doesn't ship ARM). Gauge interest via GitHub Discussions after launch.
+6. **Second DE variant (GNOME).** Not for v1. Maybe later if there's user demand.
+7. **"Make it yours" app implementation.** Qt/Kirigami app wrapping KDE theming + curated preset gallery. Core differentiator — not in v0.1, target v0.3.
+
+## Project history
+
+- **2026-04-24 (first day):** VISION + CLAUDE brief written. Renamed from "Microslop" after discovering `microslop.com` was a live "Microsoft AI Slop Tracker" (brand collision). Name reference: `macro` (big) + `softy` (easy) = "big and easy" — plus an obvious Microsoft parody that we never spell out. Website scaffolded in Astro 5 + Tailwind. Apache 2.0 LICENSE. Local git repo, no remote yet. ARM edition ("Bokkie") researched and confirmed tentative-post-v1.
 
 ## Hand-off
 
