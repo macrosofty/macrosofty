@@ -333,7 +333,7 @@ The welcome app lives in the system tray after setup — optional re-run of pick
 (Things we don't need to decide right now, parked.)
 
 1. **Domain name.** Availability confirmed on 2026-04-24: `.org`, `.com`, `.io`, `.net`, `.dev`, `.co.za` — all available for registration. Recommendation: `macrosofty.org` as primary (matches love-project posture); `.com` as optional defensive grab.
-2. **GitHub org name.** `github.com/macrosofty` is a dormant user account, not an org, so we can try for it. `github.com/macrosofty-os` is available. Pick one and register.
+2. ~~**GitHub org name.**~~ **Claimed 2026-04-24: `github.com/macrosofty`.** Main repo: `github.com/macrosofty/macrosofty`.
 3. **Trademark sanity check.** Done on 2026-04-24: no registered "Macrosofty" mark; only hits are a dormant Twitter handle from 2010 and satirical references. Microsoft parody risk exists but is low for a non-commercial love project.
 4. **Feast naming second-guess.** Does "Feast" clearly signal "gaming" to an outsider? Low-priority; we can A/B with taglines on the download page.
 5. **Bokkie (ARM) commitment.** Post-v1 stretch. Fedora Kinoite aarch64 is the base (UBlue doesn't ship ARM). Gauge interest via GitHub Discussions after launch.

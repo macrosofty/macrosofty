@@ -104,7 +104,7 @@ macrosofty/
 | **Image signing** | `cosign` + GitHub OIDC (keyless) | No long-lived keys; matches Universal Blue practice |
 | **Support channel** | GitHub Discussions | Zero infra, searchable, low moderation burden |
 | **Funding posture** | Love project; GitHub Sponsors optional; runs at a loss until it can't | No ads/accounts/telemetry; clear wind-down clause |
-| GitHub org | TBD — needs claiming. `github.com/macrosofty` is a user account (id 57542935, dormant); `github.com/macrosofty-os` is available | |
+| GitHub org | **`github.com/macrosofty`** — claimed 2026-04-24. Main repo: `github.com/macrosofty/macrosofty` (public, Apache 2.0) | |
 | Primary domain | **`macrosofty.org`** (available · not yet registered) | `.com`, `.io`, `.net`, `.dev`, `.co.za` also available as of 2026-04-24 |
 
 ## What you (Claude) should and shouldn't do in this repo
@@ -148,13 +148,14 @@ Done:
 - Apache 2.0 LICENSE at repo root
 - Git repo initialised on `main`, one commit — **no remote yet, no push**
 - `website/` fully scaffolded with Astro 5 + Tailwind 3: Hero, Personas, Editions overview, Compare table (incl. tentative Bokkie column), Make it yours, What works / doesn't, Backstory, Peace banner, Install steps, FAQ, Download. Dev server on `localhost:8006`.
-- Availability check (2026-04-24): GitHub org `macrosofty-os` open; domains `macrosofty.org/.com/.io/.net/.dev/.co.za` all available.
+- GitHub org **`macrosofty`** claimed 2026-04-24. Repo `macrosofty/macrosofty` pushed with two commits. Domains `macrosofty.org/.com/.io/.net/.dev/.co.za` all available as of 2026-04-24 — not yet registered.
 - ARM research: Fedora Kinoite ships aarch64 natively; UBlue derivatives (Bluefin/Aurora/Bazzite) don't — so Bokkie would fork Kinoite directly.
 
 Not done (in order of what blocks what):
 
-1. **Claim GitHub org & register domain** — pick `macrosofty` (if available as an org, not just the user account) or `macrosofty-os`. Register `macrosofty.org`.
-2. **`gh repo create --public --source=.`** once the org exists. Push initial commit.
+1. **Register `macrosofty.org` domain** — Cloudflare Registrar is cheapest (~R200/yr). Point at Cloudflare Pages once connected.
+2. ~~Claim GitHub org~~ — **done 2026-04-24: `github.com/macrosofty`.**
+3. ~~Push initial commit~~ — **done: `macrosofty/macrosofty` has two commits on `main`.**
 3. **Fork `ublue-os/image-template`** as the starting skeleton for the distro build pipeline.
 4. **Rename, strip, restructure** per the layout in this doc. `editions/{hearty,chunky,broth,feast}/Containerfile` skeletons.
 5. **Build Hearty first** (the canary). If it boots + installs cleanly in a VM, the other three follow the same shape.
