@@ -1,0 +1,19 @@
+# Macrosofty Chunky — power-user / knowledge-worker / light-dev edition.
+# Upstream: Universal Blue Aurora DX (KDE + dev tools).
+
+FROM scratch AS ctx
+COPY editions/chunky /ctx/edition
+COPY system_files /ctx/system_files
+
+FROM ghcr.io/ublue-os/aurora-dx:stable
+
+ARG EDITION=chunky
+ARG MACROSOFTY_VERSION=0.1.0-dev
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/edition/build.sh
+
+RUN bootc container lint

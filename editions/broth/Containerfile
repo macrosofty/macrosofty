@@ -1,0 +1,28 @@
+# Macrosofty Broth — old hardware / 4 GB RAM edition.
+# Upstream: Fedora bootc (x86-64 baseline, not v3).
+#
+# OPEN QUESTION — see editions/broth/build.sh for details. Universal Blue does
+# not ship a minimal Kinoite derivative today, so Broth's base is not a
+# drop-in swap like the other editions. Two paths:
+#   (a) FROM quay.io/fedora/fedora-bootc:41  — raw Fedora, we install KDE
+#   (b) FROM ghcr.io/ublue-os/aurora:stable  — inherit Aurora, strip packages
+# Leaning (a) to honour "minimal" and x86-64 baseline. Leaving (a) in place
+# until decided. This edition will not build cleanly until the decision is
+# made and the Plasma install steps are filled in.
+
+FROM scratch AS ctx
+COPY editions/broth /ctx/edition
+COPY system_files /ctx/system_files
+
+FROM quay.io/fedora/fedora-bootc:41
+
+ARG EDITION=broth
+ARG MACROSOFTY_VERSION=0.1.0-dev
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/edition/build.sh
+
+RUN bootc container lint
