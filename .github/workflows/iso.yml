@@ -84,14 +84,17 @@ jobs:
           cat output/config.toml
           echo "::endgroup::"
 
-      - name: Login to GHCR
+      - name: Login to GHCR (root)
         if: env.skip != 'true'
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GHCR_USER: ${{ github.actor }}
         run: |
+          # All subsequent podman calls use sudo (so the bootc-image-builder
+          # bind-mount of /var/lib/containers/storage works), so we only need
+          # root's auth set up. The runner user's rootless containers dir
+          # isn't writable on hosted runners — non-sudo login fails there.
           echo "$GHCR_TOKEN" | sudo podman login ghcr.io -u "$GHCR_USER" --password-stdin
-          echo "$GHCR_TOKEN" | podman login      ghcr.io -u "$GHCR_USER" --password-stdin
 
       - name: Pull source image into local storage
         if: env.skip != 'true'
