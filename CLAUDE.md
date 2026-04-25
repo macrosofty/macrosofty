@@ -56,9 +56,9 @@ The overall tone is **dry, friendly, self-aware, never mean**. Think Linux Mint'
 
 | Edition | Persona | Arch | Upstream base to fork | Status |
 |---|---|---|---|---|
-| 🍲 **Hearty** | Everyday user, non-technical | x86-64-v3 | `ublue-os/aurora` (KDE) | v1 |
-| 🍖 **Chunky** | Power user, knowledge worker, light dev | x86-64-v3 | `aurora-dx` | v1 |
-| 🥣 **Broth** | Older hardware, 4 GB RAM machines | x86-64 | Fedora Kinoite (minimal) | v1 |
+| 🍲 **Hearty** | Everyday user, non-technical | x86-64 | `ublue-os/aurora` (KDE) | v1 |
+| 🍖 **Chunky** | Power user, knowledge worker, light dev | x86-64 | `aurora-dx` | v1 |
+| 🥣 **Broth** | Older hardware, 4 GB RAM machines | x86-64 | `ublue-os/aurora` (stripped) | v1 |
 | 🍷 **Feast** | Gamers | x86-64-v3 | `ublue-os/bazzite` | v1 |
 | 🐰 **Bokkie** | Pi 5 / Rockchip / ARM SBCs | aarch64 | Fedora Kinoite aarch64 (skip UBlue for ARM — they're x86-only today) | **tentative · post-v1** |
 
