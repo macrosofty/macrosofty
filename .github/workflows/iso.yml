@@ -1,0 +1,150 @@
+---
+name: Build edition ISOs
+on:
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: "Edition (or 'all')"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - hearty
+          - chunky
+          - padkos
+          - braai
+      tag:
+        description: "Source image tag"
+        required: false
+        default: "latest"
+  # Auto-trigger after a successful build.yml on main, so the ISOs always
+  # follow the latest published images. Falls through harmlessly if a build
+  # fails — the `if:` below skips the job in that case.
+  workflow_run:
+    workflows: ["Build edition images"]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  iso:
+    name: ISO ${{ matrix.edition }}
+    runs-on: ubuntu-24.04
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        edition:
+          - hearty
+          - chunky
+          - padkos
+          - braai
+
+    permissions:
+      contents: read
+      packages: read
+
+    env:
+      # All untrusted inputs go through env first; shell only sees $VAR.
+      IMAGE_TAG: ${{ inputs.tag || 'latest' }}
+      EDITION: ${{ matrix.edition }}
+      SELECTED_EDITION: ${{ inputs.edition || 'all' }}
+      OWNER: ${{ github.repository_owner }}
+
+    steps:
+      - name: Skip non-selected edition
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "$SELECTED_EDITION" != "all" ] && [ "$SELECTED_EDITION" != "$EDITION" ]; then
+              echo "Skipping $EDITION — only $SELECTED_EDITION requested."
+              echo "skip=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Checkout
+        if: env.skip != 'true'
+        uses: actions/checkout@v5
+
+      - name: Maximize build space
+        if: env.skip != 'true'
+        uses: ublue-os/remove-unwanted-software@v9
+
+      - name: Substitute edition into iso.toml
+        if: env.skip != 'true'
+        run: |
+          mkdir -p output
+          # iso.toml ships with literal "EDITION" as a placeholder
+          sed "s/EDITION/${EDITION}/g" disk_config/iso.toml > output/config.toml
+          echo "::group::Effective config.toml"
+          cat output/config.toml
+          echo "::endgroup::"
+
+      - name: Login to GHCR
+        if: env.skip != 'true'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
+        run: |
+          echo "$GHCR_TOKEN" | sudo podman login ghcr.io -u "$GHCR_USER" --password-stdin
+          echo "$GHCR_TOKEN" | podman login      ghcr.io -u "$GHCR_USER" --password-stdin
+
+      - name: Pull source image into local storage
+        if: env.skip != 'true'
+        run: |
+          IMAGE="ghcr.io/${OWNER}/${EDITION}:${IMAGE_TAG}"
+          sudo podman pull "$IMAGE"
+          sudo podman images "ghcr.io/${OWNER}/${EDITION}"
+
+      - name: Build ISO with bootc-image-builder
+        if: env.skip != 'true'
+        run: |
+          IMAGE="ghcr.io/${OWNER}/${EDITION}:${IMAGE_TAG}"
+          sudo podman run --rm --privileged \
+              --pull=newer \
+              --security-opt label=type:unconfined_t \
+              -v "$PWD/output/config.toml":/config.toml:ro \
+              -v "$PWD/output":/output \
+              -v /var/lib/containers/storage:/var/lib/containers/storage \
+              quay.io/centos-bootc/bootc-image-builder:latest \
+              --type anaconda-iso \
+              --rootfs btrfs \
+              --local \
+              "$IMAGE"
+          echo "::group::Output tree"
+          sudo find output -type f -printf '%s\t%p\n' | sort -n
+          echo "::endgroup::"
+
+      - name: Locate the built ISO
+        if: env.skip != 'true'
+        id: iso
+        run: |
+          # bootc-image-builder writes anaconda-iso output to output/bootiso/install.iso
+          iso="$(sudo find output -type f -name '*.iso' | head -1)"
+          if [ -z "$iso" ]; then
+              echo "No ISO found under output/" >&2
+              sudo find output -type f >&2
+              exit 1
+          fi
+          dated="macrosofty-${EDITION}-$(date -u +%Y%m%d).iso"
+          sudo mv "$iso" "output/$dated"
+          sudo chown "$USER" "output/$dated"
+          echo "path=output/$dated" >> "$GITHUB_OUTPUT"
+          echo "name=$dated"        >> "$GITHUB_OUTPUT"
+          ls -la "output/$dated"
+
+      - name: Upload ISO artefact
+        if: env.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.iso.outputs.name }}
+          path: ${{ steps.iso.outputs.path }}
+          if-no-files-found: error
+          # Public-repo retention is free; 30 days is plenty for "is this
+          # buildable today" gate. Pin a real release elsewhere when v0.1 ships.
+          retention-days: 30
+          compression-level: 0  # ISOs are already compressed
