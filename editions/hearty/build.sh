@@ -8,6 +8,10 @@ set -euo pipefail
 
 echo "::group::Hearty build"
 
+# --- Identity ---------------------------------------------------------------
+# Make the running system identify as Macrosofty Hearty rather than Aurora.
+/ctx/scripts/generate-os-release.sh hearty "${MACROSOFTY_VERSION:-0.1.0-dev}"
+
 # --- Packages ---------------------------------------------------------------
 # Kept deliberately short. Aurora already ships a full KDE desktop, Flatpak,
 # codecs, and the sensible Universal Blue tooling. Every line added here is a

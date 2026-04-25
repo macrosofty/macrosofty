@@ -14,6 +14,9 @@ set -euo pipefail
 
 echo "::group::Padkos build"
 
+# --- Identity ---------------------------------------------------------------
+/ctx/scripts/generate-os-release.sh padkos "${MACROSOFTY_VERSION:-0.1.0-dev}"
+
 # --- Strip heavyweights -----------------------------------------------------
 # `|| true` per group: if upstream Aurora drops one of these in the future,
 # we don't want a missing package to fail the whole build. Each group is

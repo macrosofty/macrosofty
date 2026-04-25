@@ -9,6 +9,9 @@ set -euo pipefail
 
 echo "::group::Braai build"
 
+# --- Identity ---------------------------------------------------------------
+/ctx/scripts/generate-os-release.sh braai "${MACROSOFTY_VERSION:-0.1.0-dev}"
+
 if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/dev/null)" ]; then
     cp -r /ctx/system_files/shared/. /
 fi

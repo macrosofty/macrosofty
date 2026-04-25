@@ -7,6 +7,9 @@ set -euo pipefail
 
 echo "::group::Chunky build"
 
+# --- Identity ---------------------------------------------------------------
+/ctx/scripts/generate-os-release.sh chunky "${MACROSOFTY_VERSION:-0.1.0-dev}"
+
 # Aurora DX does most of the heavy lifting. Leave this minimal until we know
 # a concrete gap we want to fill.
 dnf5 install -y \

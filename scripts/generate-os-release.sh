@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# generate-os-release.sh — write Macrosofty's identity files into the image.
+#
+# Called from each edition's build.sh during container build:
+#     /ctx/scripts/generate-os-release.sh "$EDITION" "$MACROSOFTY_VERSION"
+#
+# Writes:
+#   /usr/lib/os-release   (the canonical file; /etc/os-release is a symlink to it)
+#   /etc/issue            (pre-login TTY banner)
+#   /etc/issue.net        (network pre-login banner; same content)
+#
+# Idempotent — safe to call more than once. Edition is required; version
+# defaults to 0.1.0-dev if not given. Adding a new edition is one new
+# row in the case statement below; nothing else needs touching.
+
+set -euo pipefail
+
+EDITION="${1:?usage: $0 <edition> [version]}"
+VERSION="${2:-0.1.0-dev}"
+
+case "$EDITION" in
+    hearty)  PRETTY="Hearty";  RGB="198;107;61"  ;;  # saffron orange
+    chunky)  PRETTY="Chunky";  RGB="176;70;56"   ;;  # roasted red
+    padkos)  PRETTY="Padkos";  RGB="122;136;104" ;;  # sage green
+    braai)   PRETTY="Braai";   RGB="107;44;57"   ;;  # deep wine
+    bokkie)  PRETTY="Bokkie";  RGB="170;130;90"  ;;  # buck-tan; tentative ARM
+    *) echo "Unknown edition: $EDITION" >&2; exit 1 ;;
+esac
+
+cat > /usr/lib/os-release <<EOF
+NAME="Macrosofty"
+PRETTY_NAME="Macrosofty ${PRETTY}"
+VERSION="${VERSION}"
+VERSION_ID="${VERSION}"
+ID=macrosofty
+ID_LIKE="fedora"
+VARIANT="${PRETTY}"
+VARIANT_ID=${EDITION}
+ANSI_COLOR="0;38;2;${RGB}"
+LOGO=macrosofty
+HOME_URL="https://macrosofty.org"
+DOCUMENTATION_URL="https://github.com/macrosofty/macrosofty"
+SUPPORT_URL="https://github.com/macrosofty/macrosofty/discussions"
+BUG_REPORT_URL="https://github.com/macrosofty/macrosofty/issues"
+DEFAULT_HOSTNAME=macrosofty
+EOF
+
+# /etc/os-release is conventionally a symlink to /usr/lib/os-release on
+# systemd systems. Force the symlink in case Aurora ships a real file.
+ln -sf ../usr/lib/os-release /etc/os-release
+
+# TTY banner. \r is kernel release; \l is the tty.
+cat > /etc/issue <<EOF
+Macrosofty ${PRETTY} \\r (\\l)
+
+EOF
+cp /etc/issue /etc/issue.net
+
+echo "os-release written: Macrosofty ${PRETTY} ${VERSION}"
