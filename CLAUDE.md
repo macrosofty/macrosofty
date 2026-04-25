@@ -132,6 +132,14 @@ Not "everyone." Not "Linux enthusiasts." Specifically:
 
 We are **not** optimising for the Arch user, the NixOS power-user, the minimalist who wants to `./configure && make && make install` their own kernel. They're not our customer. That's fine.
 
+## Session notes
+
+Each working session ends with a `SESSION_NOTES_<YYYY-MM-DD>.md` at the repo root, written by the `/wrap-up` skill. They capture what was done and *why*, the technical decisions worth remembering, and the open punch list for next time. Newest first:
+
+- [`SESSION_NOTES_2026-04-25.md`](./SESSION_NOTES_2026-04-25.md) — distro from scaffold to bootable ISO; identity layer; logo pipeline; public/private repo split; gmail history rewrite; ISO pipeline switched from `bootc-image-builder` to `jasonn3/build-container-installer`; Padkos validated in QEMU on x86-64.
+
+Future `/wrap-up` runs append a new bullet to the top of this list — don't skip the CLAUDE.md update step.
+
 ## Related context
 
 - This project spun out of a homelab session (2026-04-24). The home-lab repo (`/mnt/code/homelab`) is unrelated — that's infrastructure, Proxmox, Immich, Jellyfin, etc. Keep this project separate.
