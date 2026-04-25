@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <title>Macrosofty</title>
+  <desc>An open archway. We open the door, not just a window to peek through.</desc>
+  <path d="M 90 320 V 200 A 110 110 0 0 1 310 200 V 320"
+        fill="none"
+        stroke="#E89A2B"
+        stroke-width="70"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>

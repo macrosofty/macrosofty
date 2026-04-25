@@ -28,6 +28,13 @@ if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/
     cp -r /ctx/system_files/shared/. /
 fi
 
+# Refresh the icon theme cache so apps see the Macrosofty logo we just
+# overlaid into /usr/share/icons/hicolor/. Best-effort; not all base
+# images ship the helper.
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+    gtk-update-icon-cache -q -t /usr/share/icons/hicolor/ 2>/dev/null || true
+fi
+
 # --- Services ---------------------------------------------------------------
 # Leave upstream defaults alone unless we have a reason. Aurora's firstboot
 # flow handles the welcome experience.

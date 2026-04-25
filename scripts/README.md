@@ -13,6 +13,12 @@ Two flavours, distinguished by where they run:
 |---|---|---|
 | `generate-os-release.sh` | each edition's `build.sh` | Writes `/usr/lib/os-release`, the `/etc/os-release` symlink, and `/etc/issue{,.net}` so the running system identifies as `Macrosofty <Edition>` instead of inheriting Aurora's identity. Per-edition pretty name and ANSI accent colour live in a `case` statement inside this script — adding a fifth edition is one row. |
 
+## Host-time scripts
+
+| Script | Run by hand from | What it does |
+|---|---|---|
+| `generate-logos.sh` | repo root, after editing `branding/logo-master.svg` | Renders the master SVG into `system_files/shared/usr/share/icons/hicolor/<size>x<size>/apps/macrosofty.png` for every standard hicolor size, plus the scalable SVG and a pixmaps fallback. The output tree is committed; each edition's `build.sh` overlays it into the image and refreshes the icon-theme cache. Idempotent — re-run any time the master SVG changes. |
+
 ## Conventions
 
 - Bash. `set -euo pipefail` at the top. Idempotent where reasonable — re-running a script should not break the image.
