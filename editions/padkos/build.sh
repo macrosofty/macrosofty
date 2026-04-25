@@ -21,14 +21,17 @@ echo "::group::Padkos build"
 # `|| true` per group: if upstream Aurora drops one of these in the future,
 # we don't want a missing package to fail the whole build. Each group is
 # independently survivable.
-
-# Office suite — heavy on disk and RAM. Flathub's LibreOffice is current,
-# self-contained, and a one-click install for users who want it back.
-dnf5 -y remove 'libreoffice*' || true
+#
+# What we *don't* strip (despite earlier instinct): LibreOffice. Real-world
+# testing on a fresh Padkos install (2026-04-25) confirmed the audience
+# actually needs an office suite — "no office" is broken for the
+# old-laptop / second-life user, not a feature. The disk weight (~700 MB)
+# is fine on a 4 GB-RAM box; the runtime weight is zero unless they open it.
 
 # KDE PIM stack (Akonadi, KMail, Kontact, KOrganizer, KAddressBook).
 # Akonadi runs a per-user MariaDB-equivalent in the background; on a 4 GB
-# box that's the single biggest "why is this slow" culprit.
+# box that's the single biggest "why is this slow" culprit, and the audience
+# is more likely to use webmail than a desktop mail client anyway.
 dnf5 -y remove \
     'akonadi*' \
     'kmail*' \
@@ -39,16 +42,21 @@ dnf5 -y remove \
     'kdepim*' \
     || true
 
-# Heavy creative apps — Flathub has current builds of all of these.
+# Heavy creative-pro apps — Flathub has current builds of all of these,
+# one-click installable via Discover for the rare user who wants them.
 dnf5 -y remove \
     krita \
     kdenlive \
     digikam \
     || true
 
-# --- Light additions --------------------------------------------------------
-# Nothing yet. Hearty's 'tmux' line is intentionally not mirrored — Padkos's
-# audience is least likely to open a terminal. Keep the surface small.
+# --- Essential additions ----------------------------------------------------
+# Aurora ships Firefox as a Flatpak via firstboot, which depends on the
+# firstboot service firing AND the user having internet at first login.
+# For a "works on first boot, even offline" experience, we install the
+# Firefox RPM directly. Slight divergence from Aurora's pattern but
+# matches Padkos's promise: the laptop just works when you turn it on.
+dnf5 -y install firefox || true
 
 # --- Shared system files ----------------------------------------------------
 # Same pattern as the other editions.
