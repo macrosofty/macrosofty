@@ -18,6 +18,7 @@ Two flavours, distinguished by where they run:
 | Script | Run by hand from | What it does |
 |---|---|---|
 | `generate-logos.sh` | repo root, after editing `branding/logo-master.svg` | Renders the master SVG into `system_files/shared/usr/share/icons/hicolor/<size>x<size>/apps/macrosofty.png` for every standard hicolor size, plus the scalable SVG and a pixmaps fallback. The output tree is committed; each edition's `build.sh` overlays it into the image and refreshes the icon-theme cache. Idempotent — re-run any time the master SVG changes. |
+| `generate-logo-options.sh` | repo root, when iterating on the logo design | Generates N logo candidates via Cloudflare Workers AI (Flux schnell). Reads prompts on stdin, one per line, writes `v1.png` … `vN.png` to the given out-dir. The script that produced the iter01-v3 master mark — kept so future logo work (Bokkie, wordmark, post-v1 reskin) is one command. Needs `~/.config/macrosofty/cf-token` with `account_id=` and `token=`. |
 
 ## Conventions
 
