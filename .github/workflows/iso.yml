@@ -33,7 +33,7 @@ concurrency:
 jobs:
   iso:
     name: ISO ${{ matrix.edition }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.conclusion == 'success'
@@ -45,6 +45,7 @@ jobs:
           - chunky
           - padkos
           - braai
+        major_version: [43]
 
     permissions:
       contents: read
@@ -54,6 +55,7 @@ jobs:
       # All untrusted inputs go through env first; shell only sees $VAR.
       IMAGE_TAG: ${{ inputs.tag || 'latest' }}
       EDITION: ${{ matrix.edition }}
+      MAJOR_VERSION: ${{ matrix.major_version }}
       SELECTED_EDITION: ${{ inputs.edition || 'all' }}
       OWNER: ${{ github.repository_owner }}
 
@@ -70,84 +72,117 @@ jobs:
         if: env.skip != 'true'
         uses: actions/checkout@v5
 
-      - name: Maximize build space
+      - name: Free disk space
         if: env.skip != 'true'
-        uses: ublue-os/remove-unwanted-software@v9
+        # jasonn3/build-container-installer needs ~30GB headroom mid-build;
+        # GHA hosted runners ship with ~14GB free. This recovers ~30GB by
+        # dropping unneeded toolchains.
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
-      - name: Substitute edition into iso.toml
+      - name: Resolve upstream copr repo
         if: env.skip != 'true'
+        id: upstream
         run: |
-          mkdir -p output
-          # iso.toml ships with literal "EDITION" as a placeholder
-          sed "s/EDITION/${EDITION}/g" disk_config/iso.toml > output/config.toml
-          echo "::group::Effective config.toml"
-          cat output/config.toml
-          echo "::endgroup::"
+          # The ISO builder needs at least Fedora's repos to depsolve the
+          # installer media. We also pull our upstream's copr repo so any
+          # branding / firstboot packages they ship can resolve.
+          case "$EDITION" in
+              hearty|chunky|padkos)
+                  COPR_OWNER="ublue-os"
+                  COPR_NAME="aurora"
+                  ;;
+              braai)
+                  COPR_OWNER="ublue-os"
+                  COPR_NAME="bazzite"
+                  ;;
+              *)
+                  echo "Unknown edition: $EDITION" >&2
+                  exit 1
+                  ;;
+          esac
+          # Copr's filename convention puts a '-org-' between owner and name
+          # only for some projects; we try both and keep the one that works.
+          BASE="https://copr.fedorainfracloud.org/coprs/${COPR_OWNER}/${COPR_NAME}/repo/fedora-${MAJOR_VERSION}"
+          for fname in \
+              "${COPR_NAME}-org-${COPR_NAME}-fedora-${MAJOR_VERSION}.repo" \
+              "${COPR_OWNER}-${COPR_NAME}-fedora-${MAJOR_VERSION}.repo"; do
+              url="${BASE}/${fname}"
+              if curl -sfI "$url" >/dev/null; then
+                  echo "Found: $url"
+                  echo "repo_url=${url}" >> "$GITHUB_OUTPUT"
+                  echo "repo_name=upstream.repo" >> "$GITHUB_OUTPUT"
+                  exit 0
+              fi
+          done
+          echo "Could not resolve copr repo for $COPR_OWNER/$COPR_NAME" >&2
+          exit 1
 
-      - name: Login to GHCR (root)
+      - name: Download upstream copr repo
         if: env.skip != 'true'
         env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GHCR_USER: ${{ github.actor }}
+          REPO_URL: ${{ steps.upstream.outputs.repo_url }}
+          REPO_NAME: ${{ steps.upstream.outputs.repo_name }}
         run: |
-          # All subsequent podman calls use sudo (so the bootc-image-builder
-          # bind-mount of /var/lib/containers/storage works), so we only need
-          # root's auth set up. The runner user's rootless containers dir
-          # isn't writable on hosted runners — non-sudo login fails there.
-          echo "$GHCR_TOKEN" | sudo podman login ghcr.io -u "$GHCR_USER" --password-stdin
-
-      - name: Pull source image into local storage
-        if: env.skip != 'true'
-        run: |
-          IMAGE="ghcr.io/${OWNER}/${EDITION}:${IMAGE_TAG}"
-          sudo podman pull "$IMAGE"
-          sudo podman images "ghcr.io/${OWNER}/${EDITION}"
-
-      - name: Build ISO with bootc-image-builder
-        if: env.skip != 'true'
-        run: |
-          IMAGE="ghcr.io/${OWNER}/${EDITION}:${IMAGE_TAG}"
-          sudo podman run --rm --privileged \
-              --pull=newer \
-              --security-opt label=type:unconfined_t \
-              -v "$PWD/output/config.toml":/config.toml:ro \
-              -v "$PWD/output":/output \
-              -v /var/lib/containers/storage:/var/lib/containers/storage \
-              quay.io/centos-bootc/bootc-image-builder:latest \
-              --type anaconda-iso \
-              --rootfs btrfs \
-              --local \
-              "$IMAGE"
-          echo "::group::Output tree"
-          sudo find output -type f -printf '%s\t%p\n' | sort -n
+          curl -Lo "${GITHUB_WORKSPACE}/${REPO_NAME}" "$REPO_URL"
+          echo "::group::${REPO_NAME}"
+          cat "${GITHUB_WORKSPACE}/${REPO_NAME}"
           echo "::endgroup::"
 
-      - name: Locate the built ISO
+      - name: Lowercase image repo
         if: env.skip != 'true'
-        id: iso
+        id: registry_case
+        uses: ASzc/change-string-case-action@ecd1412d078f2e06e9eedcbaa6fcd988151c3f82 # v8
+        with:
+          string: ghcr.io/${{ env.OWNER }}
+
+      - name: Build ISO
+        if: env.skip != 'true'
+        id: build
+        # Same action Bazzite, Bluefin, and Aurora use to build their ISOs.
+        # Wraps lorax + osbuild and crucially accepts a `repos:` whitelist —
+        # bootc-image-builder eagerly reads every .repo file in the source
+        # image, including disabled ones with stale GPG-key paths (this is
+        # what tripped Braai on the previous bootc-image-builder pipeline).
+        uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24 # v1.4.0
+        with:
+          arch: x86_64
+          image_name: ${{ matrix.edition }}
+          image_repo: ${{ steps.registry_case.outputs.lowercase }}
+          variant: 'Kinoite'
+          version: ${{ matrix.major_version }}
+          image_tag: ${{ env.IMAGE_TAG }}
+          iso_name: macrosofty-${{ matrix.edition }}-amd64.iso
+          enable_cache_dnf: "false"
+          enable_cache_skopeo: "false"
+          enable_flatpak_dependencies: "false"
+          repos: '/github/workspace/upstream.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
+
+      - name: Stage ISO + checksum for upload
+        if: env.skip != 'true'
+        id: stage
+        env:
+          ISO_PATH: ${{ steps.build.outputs.iso_path }}
+          ISO_NAME: ${{ steps.build.outputs.iso_name }}
         run: |
-          # bootc-image-builder writes anaconda-iso output to output/bootiso/install.iso
-          iso="$(sudo find output -type f -name '*.iso' | head -1)"
-          if [ -z "$iso" ]; then
-              echo "No ISO found under output/" >&2
-              sudo find output -type f >&2
-              exit 1
+          mkdir -p upload
+          mv "${ISO_PATH}/${ISO_NAME}" upload/
+          if [ -f "${ISO_PATH}/${ISO_NAME}-CHECKSUM" ]; then
+              mv "${ISO_PATH}/${ISO_NAME}-CHECKSUM" upload/
           fi
-          dated="macrosofty-${EDITION}-$(date -u +%Y%m%d).iso"
-          sudo mv "$iso" "output/$dated"
-          sudo chown "$USER" "output/$dated"
-          echo "path=output/$dated" >> "$GITHUB_OUTPUT"
-          echo "name=$dated"        >> "$GITHUB_OUTPUT"
-          ls -la "output/$dated"
+          DATED="macrosofty-${EDITION}-$(date -u +%Y%m%d)"
+          mv "upload/${ISO_NAME}" "upload/${DATED}.iso" 2>/dev/null || true
+          if [ -f "upload/${ISO_NAME}-CHECKSUM" ]; then
+              mv "upload/${ISO_NAME}-CHECKSUM" "upload/${DATED}.iso.sha256" 2>/dev/null || true
+          fi
+          ls -lh upload/
+          echo "name=${DATED}" >> "$GITHUB_OUTPUT"
 
       - name: Upload ISO artefact
         if: env.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.iso.outputs.name }}
-          path: ${{ steps.iso.outputs.path }}
+          name: ${{ steps.stage.outputs.name }}
+          path: upload/
           if-no-files-found: error
-          # Public-repo retention is free; 30 days is plenty for "is this
-          # buildable today" gate. Pin a real release elsewhere when v0.1 ships.
           retention-days: 30
           compression-level: 0  # ISOs are already compressed
