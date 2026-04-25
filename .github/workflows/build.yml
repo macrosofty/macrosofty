@@ -30,8 +30,7 @@ jobs:
         edition:
           - hearty
           - chunky
-          # broth is skeleton-only until the base-image decision lands.
-          # - broth
+          - broth
           - feast
 
     permissions:

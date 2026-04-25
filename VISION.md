@@ -216,7 +216,7 @@ Four big buttons, labelled clearly, with a short description under each. A fallb
 | **ISO hosting** | **SourceForge** | **Free, mirrored worldwide, no bandwidth cost to us. Honest caveat: SF had adware scandals ~2013–2016 and Linux community memory is long; we address this in the FAQ by linking direct-download URLs that skip SF's UI where possible.** |
 | Website | Static (**Astro 5.x + Tailwind 3.x via `@astrojs/tailwind`**) on Cloudflare Pages | Free tier, zero JS shipped to browser, self-hosted fonts (no external CDN calls, no tracking). Tailwind 4 + `@tailwindcss/vite` migration is a future job — low priority |
 | License | Apache 2.0 | Matches Universal Blue upstream |
-| Upstream donors | Bluefin (Hearty), Bluefin-DX (Chunky), minimal Fedora atomic (Broth), Bazzite (Feast) | Inherit, don't reinvent |
+| Upstream donors | Aurora (Hearty), Aurora-DX (Chunky), Aurora stripped (Broth), Bazzite (Feast) | Inherit, don't reinvent |
 | Desktop environment | **KDE Plasma** (all editions) | Cohesion across editions; Bazzite's strong KDE work gives us a known-good gaming base; KDE's Windows-like layout lowers the learning curve for newcomers |
 | Image signing | `cosign` with GitHub Actions **OIDC keyless signing** | No long-lived secrets, no key management burden, transparency via Sigstore's public log |
 | Support channel | **GitHub Discussions** | Zero infra, searchable, tied to code, free; no Discord/Matrix moderation burden for a love project |
@@ -302,7 +302,7 @@ Not the hill to be a hero on for v1, but also not negotiable:
 
 - We don't maintain a hardware compat DB. The Fedora one is the source of truth.
 - Community-contributed "known to work / known to fail" list in GitHub Discussions, not in the main repo (low maintenance).
-- Minimum spec we publish: 4 GB RAM (Broth), 8 GB RAM (Hearty/Chunky/Feast), x86-64-v3 CPU (mostly anything from 2015+), 30 GB disk, UEFI boot. We test against a couple of reference machines.
+- Minimum spec we publish: 4 GB RAM (Broth), 8 GB RAM (Hearty/Chunky/Feast), x86-64 CPU for Hearty/Chunky/Broth (anything from ~2010+), x86-64-v3 for Feast (Bazzite's gaming kernel needs it — roughly 2013+), 30 GB disk, UEFI boot. We test against a couple of reference machines.
 - **Architecture:** v1 is x86-64 only. aarch64 (Pi 5, Rockchip SBCs, Apple Silicon via Asahi) comes later as the tentative **Bokkie** edition — forked directly from Fedora Kinoite aarch64, not from Universal Blue (they don't publish ARM images). Bokkie will never include Feast — Steam / Proton / Wine are x86-native and ARM translators (box64, FEX-emu) aren't good enough to earn our "just works" promise.
 
 ### Firstboot wizard — under 3 minutes, no account
