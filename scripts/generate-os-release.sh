@@ -36,7 +36,7 @@ esac
 # through every user-visible field instead. Aurora and Bazzite get away
 # with their own ID because they ship distro defs upstream; v0.2 work.
 cat > /usr/lib/os-release <<EOF
-NAME="Macrosofty"
+NAME="Macrosofty ${PRETTY}"
 PRETTY_NAME="Macrosofty ${PRETTY}"
 VERSION="${VERSION} (${PRETTY})"
 VERSION_ID=43
@@ -54,6 +54,12 @@ DEFAULT_HOSTNAME=macrosofty
 IMAGE_ID=${EDITION}
 IMAGE_VERSION="${VERSION}"
 EOF
+
+# /etc/system-release is what Anaconda reads for the boot-menu / install
+# screen "<distro> <version>" line. Mirroring NAME so the installer shows
+# "Macrosofty <Edition> 43" instead of just "Macrosofty 43".
+echo "Macrosofty ${PRETTY} 43" > /etc/system-release
+ln -sf system-release /etc/redhat-release 2>/dev/null || true
 
 # /etc/os-release is conventionally a symlink to /usr/lib/os-release on
 # systemd systems. Force the symlink in case Aurora ships a real file.
