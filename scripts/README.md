@@ -5,7 +5,7 @@ Reusable scripts for Macrosofty image builds and supporting automation. Anything
 Two flavours, distinguished by where they run:
 
 - **Build-time scripts** run *inside* the image during `podman build` / `buildah bud`. They have full root access to the image rootfs and are mounted into each edition's build via the ctx stage at `/ctx/scripts/`. Each edition's `build.sh` calls them by absolute path: `/ctx/scripts/<name>.sh`.
-- **Host-time scripts** (under `scripts/local/`) run on the user's machine — pulling images, smoke-testing, verifying signatures. None exist yet; convention placeholder.
+- **Host-time scripts** run on the user's machine. Some (the logo generators) live alongside the build-time scripts because they emit committed assets; truly host-only operational helpers live under `scripts/local/`.
 
 ## Build-time scripts
 
@@ -19,6 +19,12 @@ Two flavours, distinguished by where they run:
 |---|---|---|
 | `generate-logos.sh` | repo root, after editing `branding/logo-master.svg` | Renders the master SVG into `system_files/shared/usr/share/icons/hicolor/<size>x<size>/apps/macrosofty.png` for every standard hicolor size, plus the scalable SVG and a pixmaps fallback. The output tree is committed; each edition's `build.sh` overlays it into the image and refreshes the icon-theme cache. Idempotent — re-run any time the master SVG changes. |
 | `generate-logo-options.sh` | repo root, when iterating on the logo design | Generates N logo candidates via Cloudflare Workers AI (Flux schnell). Reads prompts on stdin, one per line, writes `v1.png` … `vN.png` to the given out-dir. The script that produced the iter01-v3 master mark — kept so future logo work (Bokkie, wordmark, post-v1 reskin) is one command. Needs `~/.config/macrosofty/cf-token` with `account_id=` and `token=`. |
+
+## Operational helpers (`scripts/local/`)
+
+| Script | What it does |
+|---|---|
+| `local/verify-images.sh` | Pull each edition image from `ghcr.io/macrosofty/<edition>:<tag>` and verify its cosign keyless signature in one shot. Defaults to all four editions and `:latest`; accepts edition names + `--tag=...` + `--no-pull` (skip pull, verify already-pulled images). Exit 0 = everything verified; exit 1 = at least one failure. Prints the manifest digest and originating commit for each pass. Use after a release, when troubleshooting GHCR auth, or to confirm a registry artefact really came from our workflow. |
 
 ## Conventions
 
