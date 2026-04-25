@@ -2,8 +2,8 @@
 # Upstream: Universal Blue Bazzite (KDE variant).
 
 FROM scratch AS ctx
-COPY editions/braai /ctx/edition
-COPY system_files /ctx/system_files
+COPY editions/braai /edition
+COPY system_files /system_files
 
 FROM ghcr.io/ublue-os/bazzite:stable
 

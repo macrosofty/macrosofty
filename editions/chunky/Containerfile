@@ -2,8 +2,8 @@
 # Upstream: Universal Blue Aurora DX (KDE + dev tools).
 
 FROM scratch AS ctx
-COPY editions/chunky /ctx/edition
-COPY system_files /ctx/system_files
+COPY editions/chunky /edition
+COPY system_files /system_files
 
 FROM ghcr.io/ublue-os/aurora-dx:stable
 

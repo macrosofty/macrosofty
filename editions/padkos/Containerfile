@@ -5,8 +5,8 @@
 # x86-64, no v3 pin), which is exactly what we want for old hardware.
 
 FROM scratch AS ctx
-COPY editions/padkos /ctx/edition
-COPY system_files /ctx/system_files
+COPY editions/padkos /edition
+COPY system_files /system_files
 
 FROM ghcr.io/ublue-os/aurora:stable
 

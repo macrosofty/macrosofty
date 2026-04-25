@@ -2,8 +2,8 @@
 # Upstream: Universal Blue Aurora (KDE Plasma).
 
 FROM scratch AS ctx
-COPY editions/hearty /ctx/edition
-COPY system_files /ctx/system_files
+COPY editions/hearty /edition
+COPY system_files /system_files
 
 FROM ghcr.io/ublue-os/aurora:stable
 
