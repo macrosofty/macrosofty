@@ -1,44 +1,74 @@
-# Macrosofty
+# 🍲 Macrosofty
 
 **A Linux that doesn't suck.**
 
-No ads. No accounts. No nonsense. Just a computer that respects you.
+No ads. No accounts. No nonsense. A computer that respects you.
 
 *"We open the door — not just a window to peek through."*
 
 ---
 
-## Status
+## What this is
 
-Pre-scaffold. This repo currently holds the brief, not the code.
+Macrosofty is a Linux distribution for ordinary humans. It's built on **Universal Blue + Fedora Atomic Desktop** — the same doesn't-break foundation that Bazzite, Bluefin, and Aurora ride.
 
-### Start here
-- [`VISION.md`](./VISION.md) — product, editions, tone, operational decisions, landing page plan.
-- [`CLAUDE.md`](./CLAUDE.md) — how to work on this project (for humans and agents).
+We don't reinvent. We curate. The plumbing is theirs. The friendly face is ours.
 
-### Policies and governance
-- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — PR process, what we accept, what we don't.
-- [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) — community standards.
-- [`SECURITY.md`](./SECURITY.md) — vulnerability disclosure.
-- [`SIGNING.md`](./SIGNING.md) — how image signatures work, how to verify a download.
-- [`ATTRIBUTION.md`](./ATTRIBUTION.md) — the upstream projects we stand on.
-
-### Design notes
-- [`editions/app-curation.md`](./editions/app-curation.md) — the app list per edition, and the process to change it.
-
-## The four editions (planned)
+## What you get
 
 | Edition | For | Base |
 |---|---|---|
-| 🍲 **Hearty** | Everyday use | Bluefin |
-| 🍖 **Chunky** | Work and power users | Bluefin-DX |
-| 🥣 **Broth** | Older / low-spec machines | Minimal Fedora atomic |
-| 🍷 **Feast** | Gamers | Bazzite |
+| 🍲 **Hearty** | Everyday use — browser, email, photos, Netflix, printing | Aurora |
+| 🍖 **Chunky** | Real work — office, dev tools, more muscle | Aurora-DX |
+| 🥣 **Broth** | Older laptops, 4 GB RAM, second-life machines | Aurora (stripped) |
+| 🍷 **Feast** | Gaming — Steam, Proton, controllers, all of it | Bazzite |
 
-## Next steps
+🐰 **Bokkie** (Pi 5 / ARM) is a tentative post-v1 stretch. The honest answer for now is "still coming."
 
-Scaffolding: see the plan at the bottom of [`CLAUDE.md`](./CLAUDE.md#next-steps-for-whoever-picks-this-up).
+## What we promise
+
+- **Free for everyone. Forever.**
+- No ads. No telemetry. No accounts required. Ever.
+- A system that updates itself and rolls back when it shouldn't.
+- One identity across all four editions. They're cousins, not strangers.
+- **Peace, not war.** If your current OS works for you, enjoy it. We're an alternative, not a protest.
+
+## Status — building in the open
+
+There's no installable image yet. When there is, we'll say so loudly. Until then this repo holds the plan, the scaffolding, and the trail of decisions.
+
+- [`VISION.md`](./VISION.md) — what we're building, who it's for, what it isn't.
+- [`CLAUDE.md`](./CLAUDE.md) — how we work on it.
+- [`editions/`](./editions/) — Containerfiles per edition.
+- [`website/`](./website/) — the (forthcoming) landing page.
+
+To follow along, **watch this repo**. Discussions go live around v0.1.
+
+## The shoulders we stand on
+
+This project would be ~10× the work without:
+
+- [Universal Blue](https://universal-blue.org/) — Bluefin, Aurora, Bazzite. The atomic-desktop reality.
+- [Fedora Project](https://fedoraproject.org/) — the underlying OS.
+- [Flatpak](https://flatpak.org/) and [Flathub](https://flathub.org/) — the app store that just works.
+- [bootc](https://github.com/containers/bootc), [rpm-ostree](https://coreos.github.io/rpm-ostree/), [cosign](https://github.com/sigstore/cosign).
+
+See [`ATTRIBUTION.md`](./ATTRIBUTION.md) for the full list.
+
+## Reading
+
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — PR process. What we accept, what we don't.
+- [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) — be kind. That's the rule.
+- [`SECURITY.md`](./SECURITY.md) — found a hole? Tell us privately.
+- [`SIGNING.md`](./SIGNING.md) — how to verify a build is ours.
+- [`docs/app-curation.md`](./docs/app-curation.md) — what ships in each edition, and the process to change it.
+
+## License
+
+Apache 2.0. See [`LICENSE`](./LICENSE).
 
 ---
+
+*Made with lekker in Mzansi · Free for everyone. Forever.*
 
 *The door is always open.*
