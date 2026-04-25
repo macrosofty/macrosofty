@@ -28,13 +28,20 @@ case "$EDITION" in
     *) echo "Unknown edition: $EDITION" >&2; exit 1 ;;
 esac
 
+# Why ID=fedora and VERSION_ID=43 — bootc-image-builder feeds os-release
+# into osbuild, which expects "<ID>-<VERSION_ID>" to map to a known distro
+# definition (e.g. fedora-43.toml). We don't ship a macrosofty distro
+# definition upstream yet, so on the build-tool channel we identify as
+# Fedora 43 — the actual upstream — and shine the Macrosofty identity
+# through every user-visible field instead. Aurora and Bazzite get away
+# with their own ID because they ship distro defs upstream; v0.2 work.
 cat > /usr/lib/os-release <<EOF
 NAME="Macrosofty"
 PRETTY_NAME="Macrosofty ${PRETTY}"
-VERSION="${VERSION}"
-VERSION_ID="${VERSION}"
-ID=macrosofty
-ID_LIKE="fedora"
+VERSION="${VERSION} (${PRETTY})"
+VERSION_ID=43
+ID=fedora
+ID_LIKE=fedora
 VARIANT="${PRETTY}"
 VARIANT_ID=${EDITION}
 ANSI_COLOR="0;38;2;${RGB}"
@@ -44,6 +51,8 @@ DOCUMENTATION_URL="https://github.com/macrosofty/macrosofty"
 SUPPORT_URL="https://github.com/macrosofty/macrosofty/discussions"
 BUG_REPORT_URL="https://github.com/macrosofty/macrosofty/issues"
 DEFAULT_HOSTNAME=macrosofty
+IMAGE_ID=${EDITION}
+IMAGE_VERSION="${VERSION}"
 EOF
 
 # /etc/os-release is conventionally a symlink to /usr/lib/os-release on
