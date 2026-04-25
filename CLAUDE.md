@@ -8,7 +8,7 @@ The project is at **pre-scaffold stage** (as of 2026-04-24). No code has been wr
 - `VISION.md` — the product/marketing/editions document (the "what" and "who for")
 - `CLAUDE.md` — this file (the "how we work on it")
 
-Upcoming work (not yet done): fork `ublue-os/image-template`, set up Containerfiles per edition, GitHub Actions builds, a website, branding assets.
+Note on scope: this public repo holds **distro source only** — Containerfiles, build pipeline, brief documents, attribution. The marketing site source lives in a separate **private** repo at `github.com/macrosofty/macrosofty-website` (Astro 5 + Tailwind 3) because the brand/voice/visual implementation is property, not Apache-2.0 code. The CLAUDE.md and VISION.md voice rules in this repo are the source of truth for tone — the website renders that voice; it doesn't define it.
 
 ## The voice and the metaphor
 
@@ -79,10 +79,8 @@ macrosofty/
 ├── system_files/                 (shared configs, systemd units, firstboot)
 │   └── shared/
 ├── branding/                     (logo SVG, wallpapers, plymouth theme, icon set)
-├── website/                      (static site — landing page, edition pages, FAQ)
 ├── .github/workflows/
-│   ├── build.yml                 (per-edition OCI + ISO builds → ghcr.io)
-│   └── website.yml               (deploy website on push)
+│   └── build.yml                 (per-edition OCI + ISO builds → ghcr.io)
 └── docs/
     ├── install.md
     ├── upgrades.md
@@ -147,7 +145,7 @@ Done:
 - Full VISION + CLAUDE brief, plus boilerplate (CoC, CONTRIBUTING, SECURITY, SIGNING, ATTRIBUTION)
 - Apache 2.0 LICENSE at repo root
 - Git repo initialised on `main`, one commit — **no remote yet, no push**
-- `website/` fully scaffolded with Astro 5 + Tailwind 3: Hero, Personas, Editions overview, Compare table (incl. tentative Bokkie column), Make it yours, What works / doesn't, Backstory, Peace banner, Install steps, FAQ, Download. Dev server on `localhost:8006`.
+- Marketing site fully scaffolded with Astro 5 + Tailwind 3 — moved 2026-04-25 to the **private** sibling repo `github.com/macrosofty/macrosofty-website` (working dir `/var/mnt/code/macrosofty-website`). Same sections: Hero, Personas, Editions, Compare, Make it yours, What works/doesn't, Backstory, Peace banner, Install, FAQ, Download. Dev server on `localhost:8006`.
 - GitHub org **`macrosofty`** claimed 2026-04-24. Repo `macrosofty/macrosofty` pushed with two commits. Domains `macrosofty.org/.com/.io/.net/.dev/.co.za` all available as of 2026-04-24 — not yet registered.
 - ARM research: Fedora Kinoite ships aarch64 natively; UBlue derivatives (Bluefin/Aurora/Bazzite) don't — so Bokkie would fork Kinoite directly.
 
@@ -161,7 +159,7 @@ Not done (in order of what blocks what):
 5. **Build Hearty first** (the canary). If it boots + installs cleanly in a VM, the other three follow the same shape.
 6. **Wire up GitHub Actions:** OCI build + cosign keyless sign → `ghcr.io/<org>/hearty:latest` → bootc-image-builder ISO → rsync to SourceForge.
 7. **Build the "Make it yours" app** (Qt/Kirigami) — curated one-click palettes, wallpaper upload, cursor/text-size, icon packs. This is the unique shipping thing that differentiates us from Bluefin/Aurora. Not in v0.1; target for v0.3.
-8. **Cloudflare Pages** — connect the new repo, `website/` subdirectory as the build root, build command `npm run build`.
+8. **Cloudflare Pages** — connect the **private** `macrosofty/macrosofty-website` repo, build root is the repo root, build command `npm run build`.
 9. **Iterate on branding** (plymouth, GRUB, wallpapers, favicon, OG image) — all placeholders today.
 10. **Soft launch** — announce in GitHub Discussions first, then a single r/linux or lobste.rs post. No timelines, no promises.
 11. **Later / tentative:** Bokkie (ARM) edition, Afrikaans localisation, second DE variant (GNOME).

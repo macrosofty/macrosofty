@@ -40,7 +40,6 @@ There's no installable image yet. When there is, we'll say so loudly. Until then
 - [`VISION.md`](./VISION.md) — what we're building, who it's for, what it isn't.
 - [`CLAUDE.md`](./CLAUDE.md) — how we work on it.
 - [`editions/`](./editions/) — Containerfiles per edition.
-- [`website/`](./website/) — the (forthcoming) landing page.
 
 To follow along, **watch this repo**. Discussions go live around v0.1.
 
