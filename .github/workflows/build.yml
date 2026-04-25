@@ -30,8 +30,8 @@ jobs:
         edition:
           - hearty
           - chunky
-          - broth
-          - feast
+          - padkos
+          - braai
 
     permissions:
       contents: read

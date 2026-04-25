@@ -48,7 +48,7 @@ The overall tone is **dry, friendly, self-aware, never mean**. Think Linux Mint'
 2. **Decisions over choices.** We ship opinions. Users can override, but the defaults are curated on purpose.
 3. **No ads, no nags, no telemetry, no accounts required.** Ever. This is a load-bearing promise.
 4. **Inherit upstream work ruthlessly.** Universal Blue, Fedora, and Flatpak do the hard lifting. We layer curation, not rewrites.
-5. **Four editions, one identity.** Hearty, Chunky, Broth, Feast all feel like Macrosofty. No edition is visually a different OS.
+5. **Four editions, one identity.** Hearty, Chunky, Padkos, Braai all feel like Macrosofty. No edition is visually a different OS.
 6. **Conversion-friendly copy.** Landing pages and docs are written for the Windows-tired person who stumbled in from a blog post — not for Linux nerds. Nerds find us on their own.
 7. **The system is opinionated. The desktop is yours.** Customisation (wallpaper, colour palette, cursor size, text size, icon pack) is a *first-class, one-click* experience — not a rabbit-hole of config files. We handle the plumbing; users handle the paint. The nerd levers (KDE global themes, Konsave, Kvantum, .desktop files) stay accessible — they're just not required. A user should be able to make everything pink and put their doggy on the wallpaper without ever reading a manual.
 
@@ -58,11 +58,11 @@ The overall tone is **dry, friendly, self-aware, never mean**. Think Linux Mint'
 |---|---|---|---|---|
 | 🍲 **Hearty** | Everyday user, non-technical | x86-64 | `ublue-os/aurora` (KDE) | v1 |
 | 🍖 **Chunky** | Power user, knowledge worker, light dev | x86-64 | `aurora-dx` | v1 |
-| 🥣 **Broth** | Older hardware, 4 GB RAM machines | x86-64 | `ublue-os/aurora` (stripped) | v1 |
-| 🍷 **Feast** | Gamers | x86-64-v3 | `ublue-os/bazzite` | v1 |
+| 🧺 **Padkos** | Older hardware, 4 GB RAM machines | x86-64 | `ublue-os/aurora` (stripped) | v1 |
+| 🔥 **Braai** | Gamers | x86-64-v3 | `ublue-os/bazzite` | v1 |
 | 🐰 **Bokkie** | Pi 5 / Rockchip / ARM SBCs | aarch64 | Fedora Kinoite aarch64 (skip UBlue for ARM — they're x86-only today) | **tentative · post-v1** |
 
-**Bokkie never includes Feast functionality** — Steam / Proton / Wine are x86-native and do not work reliably on ARM translators. If someone asks for ARM gaming, the honest answer is "no, not fixable by us."
+**Bokkie never includes Braai functionality** — Steam / Proton / Wine are x86-native and do not work reliably on ARM translators. If someone asks for ARM gaming, the honest answer is "no, not fixable by us."
 
 ## Repository layout (proposed, not yet built)
 
@@ -74,8 +74,8 @@ macrosofty/
 ├── editions/
 │   ├── hearty/Containerfile
 │   ├── chunky/Containerfile
-│   ├── broth/Containerfile
-│   └── feast/Containerfile
+│   ├── padkos/Containerfile
+│   └── braai/Containerfile
 ├── system_files/                 (shared configs, systemd units, firstboot)
 │   └── shared/
 ├── branding/                     (logo SVG, wallpapers, plymouth theme, icon set)
@@ -157,7 +157,7 @@ Not done (in order of what blocks what):
 2. ~~Claim GitHub org~~ — **done 2026-04-24: `github.com/macrosofty`.**
 3. ~~Push initial commit~~ — **done: `macrosofty/macrosofty` has two commits on `main`.**
 3. **Fork `ublue-os/image-template`** as the starting skeleton for the distro build pipeline.
-4. **Rename, strip, restructure** per the layout in this doc. `editions/{hearty,chunky,broth,feast}/Containerfile` skeletons.
+4. **Rename, strip, restructure** per the layout in this doc. `editions/{hearty,chunky,padkos,braai}/Containerfile` skeletons.
 5. **Build Hearty first** (the canary). If it boots + installs cleanly in a VM, the other three follow the same shape.
 6. **Wire up GitHub Actions:** OCI build + cosign keyless sign → `ghcr.io/<org>/hearty:latest` → bootc-image-builder ISO → rsync to SourceForge.
 7. **Build the "Make it yours" app** (Qt/Kirigami) — curated one-click palettes, wallpaper upload, cursor/text-size, icon packs. This is the unique shipping thing that differentiates us from Bluefin/Aurora. Not in v0.1; target for v0.3.

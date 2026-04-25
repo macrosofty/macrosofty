@@ -68,14 +68,14 @@ Everything Hearty has, plus a full office suite, PDF editing that actually edits
 
 *The one the door company would have called "Pro" and hidden behind a paywall.*
 
-### 🥣 Macrosofty Broth
-**For reviving an older machine.**
+### 🧺 Macrosofty Padkos
+**Old hardware, new places.**
 
-Boots fast on 4 GB of RAM. Does browsing, documents, email, video. Gets out of the way. Perfect for a second PC, an old Thinkpad, a family member who just needs "the internet computer."
+Not getting left behind. Padkos is the food you take for the road — what keeps you going on the long drive. This edition does the same for an older laptop. Boots fast on 4 GB. Browser, email, documents, video. Quiet, light, dignified.
 
 *The edition the door company would have called "Essentials" and quietly retired after two years.*
 
-### 🍷 Macrosofty Feast
+### 🔥 Macrosofty Braai
 **For players.**
 
 Steam, Proton, Lutris, Heroic, Bottles — pre-configured and kept current. Controllers plug in and work. Games from Steam, Epic, GOG, Battle.net, and classic discs run. Low-latency kernel. No driver archaeology.
@@ -87,12 +87,12 @@ Built on Bazzite's work — we owe them a beer.
 ### 🐰 Macrosofty Bokkie — **tentative, post-v1**
 **For ARM machines: Pi 5, Rockchip SBCs, ARM laptops.**
 
-Fedora Kinoite already runs beautifully on aarch64 hardware. Bokkie would be a minimal Hearty/Broth-equivalent edition for people giving their old Pi 5 or Rockchip board a second life.
+Fedora Kinoite already runs beautifully on aarch64 hardware. Bokkie would be a minimal Hearty/Padkos-equivalent edition for people giving their old Pi 5 or Rockchip board a second life.
 
 **Not shipping in v1.** Three honest reasons:
 1. Our Universal Blue inheritance path (Bluefin / Aurora / Bazzite) is x86-64 only today. A Bokkie would have to fork Fedora Kinoite directly — more of our own plumbing, less inherited.
 2. We want the four x86 editions stable first.
-3. Bokkie will **never** include Feast. Steam, Proton, and Wine are x86 at heart; ARM translators (box64, FEX) aren't the polished, it-just-works experience we promise.
+3. Bokkie will **never** include Braai. Steam, Proton, and Wine are x86 at heart; ARM translators (box64, FEX) aren't the polished, it-just-works experience we promise.
 
 If there's demand in GitHub Discussions after v1 launches, Bokkie moves up the list. Until then: "still coming."
 
@@ -151,10 +151,10 @@ A self-select decision path. Each entry ends with an implicit "if that's you, th
 > → You want **Macrosofty Chunky**. Everything Hearty has, plus office tooling, PDF editing, developer tools, better file management.
 
 > **"I'm trying to revive an older laptop."**
-> → You want **Macrosofty Broth**. Runs on 4 GB of RAM. Boots in seconds. Gives old hardware a second life.
+> → You want **Macrosofty Padkos**. Runs on 4 GB of RAM. Boots in seconds. Gives old hardware a second life.
 
 > **"I want to play games."**
-> → You want **Macrosofty Feast**. Steam, Proton, controllers, your Steam Deck's best tricks. Plug in, install, play.
+> → You want **Macrosofty Braai**. Steam, Proton, controllers, your Steam Deck's best tricks. Plug in, install, play.
 
 > **"I want them all but have one computer."**
 > → Pick the one closest to your main use. You can always install apps from another edition later.
@@ -191,7 +191,7 @@ Four big buttons, labelled clearly, with a short description under each. A fallb
 
 ## What we are not
 
-- Not a gaming-first distro (Bazzite is, and we point people there — our Feast edition is lightly rebranded downstream of Bazzite's work).
+- Not a gaming-first distro (Bazzite is, and we point people there — our Braai edition is lightly rebranded downstream of Bazzite's work).
 - Not a tinkerer's distro (Arch, NixOS, Gentoo cover that).
 - Not "a better Ubuntu" or "a better Mint." We stand on their shoulders; we aren't competing with them directly. Our competitor is the door company.
 - Not a community-driven free-for-all. Opinions are baked in on purpose. Users can override; we don't take PRs that dilute the identity.
@@ -216,7 +216,7 @@ Four big buttons, labelled clearly, with a short description under each. A fallb
 | **ISO hosting** | **SourceForge** | **Free, mirrored worldwide, no bandwidth cost to us. Honest caveat: SF had adware scandals ~2013–2016 and Linux community memory is long; we address this in the FAQ by linking direct-download URLs that skip SF's UI where possible.** |
 | Website | Static (**Astro 5.x + Tailwind 3.x via `@astrojs/tailwind`**) on Cloudflare Pages | Free tier, zero JS shipped to browser, self-hosted fonts (no external CDN calls, no tracking). Tailwind 4 + `@tailwindcss/vite` migration is a future job — low priority |
 | License | Apache 2.0 | Matches Universal Blue upstream |
-| Upstream donors | Aurora (Hearty), Aurora-DX (Chunky), Aurora stripped (Broth), Bazzite (Feast) | Inherit, don't reinvent |
+| Upstream donors | Aurora (Hearty), Aurora-DX (Chunky), Aurora stripped (Padkos), Bazzite (Braai) | Inherit, don't reinvent |
 | Desktop environment | **KDE Plasma** (all editions) | Cohesion across editions; Bazzite's strong KDE work gives us a known-good gaming base; KDE's Windows-like layout lowers the learning curve for newcomers |
 | Image signing | `cosign` with GitHub Actions **OIDC keyless signing** | No long-lived secrets, no key management burden, transparency via Sigstore's public log |
 | Support channel | **GitHub Discussions** | Zero infra, searchable, tied to code, free; no Discord/Matrix moderation burden for a love project |
@@ -261,7 +261,7 @@ No SLA. Answers are best-effort. Clear expectation in the README: *"This is a lo
 
 ### Anti-cheat honesty — up front, in the FAQ, not buried
 
-Feast users need to know that **kernel-level anti-cheat (Vanguard, BattlEye-EAC, most competitive-shooter anti-cheat) does not work on Linux**, and that's not something we can fix. Games it blocks include (at time of writing):
+Braai users need to know that **kernel-level anti-cheat (Vanguard, BattlEye-EAC, most competitive-shooter anti-cheat) does not work on Linux**, and that's not something we can fix. Games it blocks include (at time of writing):
 
 - Valorant (hard block, kernel-level)
 - Fortnite (multiplayer blocked; SP/offline modes fine)
@@ -273,7 +273,7 @@ Feast users need to know that **kernel-level anti-cheat (Vanguard, BattlEye-EAC,
 
 The FAQ phrases it honestly:
 
-> **"Can I play Valorant / Fortnite / CoD on Feast?"**
+> **"Can I play Valorant / Fortnite / CoD on Braai?"**
 > No — not because of anything we're doing, but because those games require a Windows kernel driver for their anti-cheat and don't support Linux. Nothing any Linux distribution can do about this. Check [areweanticheatyet.com](https://areweanticheatyet.com) for current status. Most non-kernel-anti-cheat games work great.
 
 ### Trademark / attribution to upstream
@@ -302,8 +302,8 @@ Not the hill to be a hero on for v1, but also not negotiable:
 
 - We don't maintain a hardware compat DB. The Fedora one is the source of truth.
 - Community-contributed "known to work / known to fail" list in GitHub Discussions, not in the main repo (low maintenance).
-- Minimum spec we publish: 4 GB RAM (Broth), 8 GB RAM (Hearty/Chunky/Feast), x86-64 CPU for Hearty/Chunky/Broth (anything from ~2010+), x86-64-v3 for Feast (Bazzite's gaming kernel needs it — roughly 2013+), 30 GB disk, UEFI boot. We test against a couple of reference machines.
-- **Architecture:** v1 is x86-64 only. aarch64 (Pi 5, Rockchip SBCs, Apple Silicon via Asahi) comes later as the tentative **Bokkie** edition — forked directly from Fedora Kinoite aarch64, not from Universal Blue (they don't publish ARM images). Bokkie will never include Feast — Steam / Proton / Wine are x86-native and ARM translators (box64, FEX-emu) aren't good enough to earn our "just works" promise.
+- Minimum spec we publish: 4 GB RAM (Padkos), 8 GB RAM (Hearty/Chunky/Braai), x86-64 CPU for Hearty/Chunky/Padkos (anything from ~2010+), x86-64-v3 for Braai (Bazzite's gaming kernel needs it — roughly 2013+), 30 GB disk, UEFI boot. We test against a couple of reference machines.
+- **Architecture:** v1 is x86-64 only. aarch64 (Pi 5, Rockchip SBCs, Apple Silicon via Asahi) comes later as the tentative **Bokkie** edition — forked directly from Fedora Kinoite aarch64, not from Universal Blue (they don't publish ARM images). Bokkie will never include Braai — Steam / Proton / Wine are x86-native and ARM translators (box64, FEX-emu) aren't good enough to earn our "just works" promise.
 
 ### Firstboot wizard — under 3 minutes, no account
 
@@ -321,10 +321,10 @@ The welcome app lives in the system tray after setup — optional re-run of pick
 ### ISO hosting on SourceForge — how we do it
 
 1. Create the `macrosofty` SourceForge project. Use the "File Release System."
-2. Each edition gets its own folder: `/Hearty/`, `/Chunky/`, `/Broth/`, `/Feast/`.
+2. Each edition gets its own folder: `/Hearty/`, `/Chunky/`, `/Padkos/`, `/Braai/`.
 3. GitHub Actions uploads new ISOs via `sshpass`/`rsync` on successful build.
 4. **Direct-download URLs** are published on our website, using SF's `/files/.../download` pattern which bypasses most of their sponsored-ad UI.
-5. We mirror ISOs to GitHub Releases only for the **very latest** (GH Release asset size is 2 GB, some editions fit, Feast probably won't). SF is the primary.
+5. We mirror ISOs to GitHub Releases only for the **very latest** (GH Release asset size is 2 GB, some editions fit, Braai probably won't). SF is the primary.
 6. SHA256 sums and `cosign` signatures hosted alongside every ISO.
 7. **Honest caveat on the website:** "We host on SourceForge because it's free and mirrored worldwide. SF had reputation issues in the mid-2010s; the links below go directly to the file and skip the sponsored interstitials where possible. Verify the SHA256 sum on download."
 
@@ -335,7 +335,7 @@ The welcome app lives in the system tray after setup — optional re-run of pick
 1. **Domain name.** Availability confirmed on 2026-04-24: `.org`, `.com`, `.io`, `.net`, `.dev`, `.co.za` — all available for registration. Recommendation: `macrosofty.org` as primary (matches love-project posture); `.com` as optional defensive grab.
 2. ~~**GitHub org name.**~~ **Claimed 2026-04-24: `github.com/macrosofty`.** Main repo: `github.com/macrosofty/macrosofty`.
 3. **Trademark sanity check.** Done on 2026-04-24: no registered "Macrosofty" mark; only hits are a dormant Twitter handle from 2010 and satirical references. Microsoft parody risk exists but is low for a non-commercial love project.
-4. **Feast naming second-guess.** Does "Feast" clearly signal "gaming" to an outsider? Low-priority; we can A/B with taglines on the download page.
+4. **Braai naming second-guess.** Does "Braai" clearly signal "gaming" to an outsider? Low-priority; we can A/B with taglines on the download page.
 5. **Bokkie (ARM) commitment.** Post-v1 stretch. Fedora Kinoite aarch64 is the base (UBlue doesn't ship ARM). Gauge interest via GitHub Discussions after launch.
 6. **Second DE variant (GNOME).** Not for v1. Maybe later if there's user demand.
 7. **"Make it yours" app implementation.** Qt/Kirigami app wrapping KDE theming + curated preset gallery. Core differentiator — not in v0.1, target v0.3.

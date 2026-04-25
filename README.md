@@ -20,8 +20,8 @@ We don't reinvent. We curate. The plumbing is theirs. The friendly face is ours.
 |---|---|---|
 | 🍲 **Hearty** | Everyday use — browser, email, photos, Netflix, printing | Aurora |
 | 🍖 **Chunky** | Real work — office, dev tools, more muscle | Aurora-DX |
-| 🥣 **Broth** | Older laptops, 4 GB RAM, second-life machines | Aurora (stripped) |
-| 🍷 **Feast** | Gaming — Steam, Proton, controllers, all of it | Bazzite |
+| 🧺 **Padkos** | Old hardware, new places — 4 GB RAM, not getting left behind | Aurora (stripped) |
+| 🔥 **Braai** | Gaming — Steam, Proton, controllers, all of it | Bazzite |
 
 🐰 **Bokkie** (Pi 5 / ARM) is a tentative post-v1 stretch. The honest answer for now is "still coming."
 

@@ -84,7 +84,7 @@ Add to Hearty's list:
 
 ---
 
-## 🥣 Broth — Light edition
+## 🧺 Padkos — Light edition
 
 **Base:** Minimal Fedora atomic (not Bluefin). KDE Plasma with lightweight theme defaults.
 
@@ -100,7 +100,7 @@ Target spec: **4 GB RAM, 32-bit-OK iGPUs of the 2015+ era, single-user, non-gami
 ### Add
 - **OnlyOffice Mobile** or **WPS Office** (Flatpak) — lighter than full OnlyOffice Desktop; if disk/RAM very constrained, push users to web office suites instead
 - **Signal Desktop** (Flatpak) — low resource, widely useful
-- Not much else. Broth is defined by what we *don't* include.
+- Not much else. Padkos is defined by what we *don't* include.
 
 ### Explicitly remove
 - OnlyOffice Desktop Editors (too heavy; use web version or WPS if user insists)
@@ -115,13 +115,13 @@ Short list, aimed at "what do you actually need?":
 - Web shortcuts (Gmail, Google Docs, Outlook Web) as pinned Firefox apps
 - OnlyOffice Desktop if user really wants it (with a warning about resources)
 
-### Broth philosophy
+### Padkos philosophy
 
-Broth isn't "Hearty stripped." It's "what does this old laptop actually need?" Assume the user is using it for: browsing, email, basic docs, video. Make those fast. Everything else is optional.
+Padkos isn't "Hearty stripped." It's "what does this old laptop actually need?" Assume the user is using it for: browsing, email, basic docs, video. Make those fast. Everything else is optional.
 
 ---
 
-## 🍷 Feast — Gaming edition
+## 🔥 Braai — Gaming edition
 
 **Base:** Bazzite (KDE variant). **We inherit nearly everything from Bazzite unchanged.**
 
@@ -144,7 +144,7 @@ Broth isn't "Hearty stripped." It's "what does this old laptop actually need?" A
 - **Discord** (Flatpak) — gamers communicate on it, don't pretend otherwise
 - **OBS Studio** (Flatpak) — streaming and clipping
 - **Moonlight** (Flatpak) — streaming games from a separate host (NVIDIA Shield-style)
-- Hearty's core set (Firefox, OnlyOffice Desktop, VLC, Thunderbird, Signal) — Feast users deserve a functional OS too
+- Hearty's core set (Firefox, OnlyOffice Desktop, VLC, Thunderbird, Signal) — Braai users deserve a functional OS too
 
 ### Remove from Bazzite upstream
 - Bazzite-specific branding (obviously)
@@ -169,8 +169,8 @@ Slack, Microsoft Teams (web wrapper), Element (Matrix), Telegram, Skype Web
 ### Creative
 GIMP, Inkscape, Krita, Darktable, Kdenlive, OBS Studio, Audacity
 
-### Gaming extras (in non-Feast editions)
-Steam, Lutris — with a warning that Feast is better-tuned
+### Gaming extras (in non-Braai editions)
+Steam, Lutris — with a warning that Braai is better-tuned
 
 ### Productivity+
 LibreOffice (if Chunky isn't chosen), Thunderbird, Joplin, Obsidian (Flatpak)

@@ -1,16 +1,16 @@
-# Macrosofty Broth — old hardware / 4 GB RAM edition.
+# Macrosofty Padkos — old hardware / 4 GB RAM edition.
 # Upstream: Universal Blue Aurora (same as Hearty), but with the heavier
 # desktop apps stripped out so the image fits in less RAM and disk on
 # elderly machines. Aurora itself rides standard Fedora Kinoite (generic
 # x86-64, no v3 pin), which is exactly what we want for old hardware.
 
 FROM scratch AS ctx
-COPY editions/broth /ctx/edition
+COPY editions/padkos /ctx/edition
 COPY system_files /ctx/system_files
 
 FROM ghcr.io/ublue-os/aurora:stable
 
-ARG EDITION=broth
+ARG EDITION=padkos
 ARG MACROSOFTY_VERSION=0.1.0-dev
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \

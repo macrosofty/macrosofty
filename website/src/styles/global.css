@@ -82,7 +82,7 @@
   /* A soft, fading section rule */
   .rule {
     height: 1px;
-    background: linear-gradient(to right, transparent, theme('colors.broth.light'), transparent);
+    background: linear-gradient(to right, transparent, theme('colors.padkos.light'), transparent);
     opacity: 0.6;
   }
 
@@ -91,12 +91,12 @@
     font-family: 'Fraunces Variable', serif;
     font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;
     font-style: italic;
-    color: theme('colors.broth.DEFAULT');
+    color: theme('colors.padkos.DEFAULT');
   }
 
   /* Link underline treatment — rounder, warmer */
   a.prose-link {
-    color: theme('colors.broth.dark');
+    color: theme('colors.padkos.dark');
     text-decoration: underline;
     text-decoration-thickness: 1.5px;
     text-underline-offset: 4px;
@@ -142,7 +142,7 @@
     width: 120px;
     height: 60px;
     margin-inline: auto;
-    color: theme('colors.broth.DEFAULT');
+    color: theme('colors.padkos.DEFAULT');
     opacity: 0.6;
   }
 
@@ -259,7 +259,7 @@
     gap: 0.4rem;
     padding: 0.35rem 0.8rem;
     background: theme('colors.blush.light');
-    color: theme('colors.broth.dark');
+    color: theme('colors.padkos.dark');
     border-radius: 999px;
     font-family: 'IBM Plex Mono', ui-monospace, monospace;
     font-size: 0.72rem;

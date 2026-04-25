@@ -22,7 +22,7 @@ We will:
 ## Scope
 
 **In scope:**
-- The Macrosofty images themselves (Hearty, Chunky, Broth, Feast)
+- The Macrosofty images themselves (Hearty, Chunky, Padkos, Braai)
 - Our build pipeline (GitHub Actions workflows, signing)
 - Our website (static site) and any forms there
 - Macrosofty-specific packages or scripts

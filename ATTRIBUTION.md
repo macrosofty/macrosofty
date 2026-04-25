@@ -23,10 +23,10 @@ Macrosofty exists because other people did the hard work first. This is the full
 - **Gratitude:** The Bluefin team's polish work on desktop ergonomics is the reason Hearty feels good out of the box.
 
 ### Bazzite
-- **What:** The base for Macrosofty Feast. Gaming-tuned atomic Fedora.
+- **What:** The base for Macrosofty Braai. Gaming-tuned atomic Fedora.
 - **License:** Apache 2.0
 - **Home:** https://bazzite.gg
-- **Gratitude:** The Bazzite team has spent years solving every "why doesn't Proton work with my controller" edge case. Feast is, frankly, their hard work with our branding on top.
+- **Gratitude:** The Bazzite team has spent years solving every "why doesn't Proton work with my controller" edge case. Braai is, frankly, their hard work with our branding on top.
 
 ### KDE Plasma
 - **What:** The desktop environment we ship on all editions.
@@ -48,7 +48,7 @@ Macrosofty exists because other people did the hard work first. This is the full
 - **License:** Apache 2.0
 - **Home:** https://www.sigstore.dev
 
-## Gaming stack (Feast edition)
+## Gaming stack (Braai edition)
 
 All of the following are bundled via Bazzite's upstream work:
 

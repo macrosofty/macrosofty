@@ -11,14 +11,14 @@ interface Cell {
 interface Row {
   label: string;
   hint?: string;      // tooltip-ish hint (kept visible, small)
-  cells: [Cell, Cell, Cell, Cell, Cell];   // Hearty, Chunky, Broth, Feast, Bokkie
+  cells: [Cell, Cell, Cell, Cell, Cell];   // Hearty, Chunky, Padkos, Braai, Bokkie
 }
 
 const editions = [
   { key: 'hearty',  emoji: '🍲', name: 'Hearty',  tag: 'everyday',     rgb: '#C66B3D' },
   { key: 'chunky',  emoji: '🍖', name: 'Chunky',  tag: 'work',         rgb: '#B04638' },
-  { key: 'broth',   emoji: '🥣', name: 'Broth',   tag: 'old hardware', rgb: '#7A8868' },
-  { key: 'feast',   emoji: '🍷', name: 'Feast',   tag: 'gaming',       rgb: '#6B2C39' },
+  { key: 'padkos',   emoji: '🧺', name: 'Padkos',   tag: 'old hardware', rgb: '#7A8868' },
+  { key: 'braai',   emoji: '🔥', name: 'Braai',   tag: 'gaming',       rgb: '#6B2C39' },
   { key: 'bokkie',  emoji: '🐰', name: 'Bokkie',  tag: 'ARM · tentative', rgb: '#8B5A3C' },
 ];
 
@@ -161,7 +161,7 @@ function supportBadge(s?: Support) {
   <div class="max-w-6xl mx-auto px-6 sm:px-8 relative">
     <div class="flex items-center gap-3 text-sm font-mono text-ink-500 mb-6">
       <span>02&middot;5</span>
-      <span class="w-8 h-px bg-broth-light opacity-60"></span>
+      <span class="w-8 h-px bg-padkos-light opacity-60"></span>
       <span class="tracking-widest uppercase text-xs">Side by side</span>
     </div>
 
@@ -169,7 +169,7 @@ function supportBadge(s?: Support) {
       <div class="col-span-12 md:col-span-8">
         <h2 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] tracking-tight mb-5">
           Compare them<br />
-          <span class="italic text-broth">side by side.</span>
+          <span class="italic text-padkos">side by side.</span>
         </h2>
         <p class="max-w-prose text-lg text-ink-700 leading-relaxed">
           Still can't pick? Scan the rows. Green means <span class="italic">"yes, this just works."</span> Amber means <span class="italic">"works, but needs one click."</span> Dashed means <span class="italic">"not yet — coming later."</span> We'd rather show you the honest line-up now than catfish you on download day.
@@ -177,7 +177,7 @@ function supportBadge(s?: Support) {
       </div>
 
       <div class="col-span-12 md:col-span-4 md:text-right">
-        <span class="chip" style="background: theme('colors.blush.light'); color: theme('colors.broth.dark'); border-color: theme('colors.blush.DEFAULT');">
+        <span class="chip" style="background: theme('colors.blush.light'); color: theme('colors.padkos.dark'); border-color: theme('colors.blush.DEFAULT');">
           Bokkie (ARM) is tentative
         </span>
       </div>
@@ -306,7 +306,7 @@ function supportBadge(s?: Support) {
           A note on Bokkie (ARM).
         </p>
         <p class="text-ink-700 leading-relaxed text-[0.95rem]">
-          This column is <span class="italic">tentative</span>. Fedora Atomic already runs on aarch64 — Pi 5, Rockchip SBCs, Apple Silicon via Asahi — so the foundation is ready. What's missing is our Universal Blue inheritance path (Bluefin / Bazzite / Aurora are all x86-64 today). For v1 we ship the four x86 editions. A Bokkie release comes <span class="font-medium text-ink-900">after</span> the other four are stable, and it won't include Feast (Steam / Proton / Wine are x86 at heart — can't fix that). If you're excited for ARM, say so in GitHub Discussions once we're live — that moves it up the list.
+          This column is <span class="italic">tentative</span>. Fedora Atomic already runs on aarch64 — Pi 5, Rockchip SBCs, Apple Silicon via Asahi — so the foundation is ready. What's missing is our Universal Blue inheritance path (Bluefin / Bazzite / Aurora are all x86-64 today). For v1 we ship the four x86 editions. A Bokkie release comes <span class="font-medium text-ink-900">after</span> the other four are stable, and it won't include Braai (Steam / Proton / Wine are x86 at heart — can't fix that). If you're excited for ARM, say so in GitHub Discussions once we're live — that moves it up the list.
         </p>
       </div>
     </div>

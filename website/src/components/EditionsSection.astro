@@ -28,11 +28,11 @@ const editions = [
     rgb: '#B04638',
   },
   {
-    id: 'edition-broth',
-    emoji: '🥣',
-    name: 'Broth',
-    tagline: 'For reviving an older machine.',
-    body: "Boots fast on 4 GB of RAM. Does browsing, documents, email, video. Gets out of the way. Perfect for a second PC, an old Thinkpad, or a family member who just needs ‘the internet computer.'",
+    id: 'edition-padkos',
+    emoji: '🧺',
+    name: 'Padkos',
+    tagline: 'Old hardware, new places.',
+    body: "Not getting left behind. Padkos is the food you take for the road — what keeps you going on the long drive. This edition does the same for an older laptop. Boots fast on 4 GB. Browser, email, documents, video. Quiet, light, dignified.",
     wink: 'The edition the door company would have called "Essentials" and quietly retired after two years.',
     bestFor: 'Old laptops, second PCs',
     minSpec: '4 GB RAM, 2012-or-later x86-64',
@@ -40,15 +40,15 @@ const editions = [
     rgb: '#7A8868',
   },
   {
-    id: 'edition-feast',
-    emoji: '🍷',
-    name: 'Feast',
+    id: 'edition-braai',
+    emoji: '🔥',
+    name: 'Braai',
     tagline: 'For players.',
     body: 'Steam, Proton, Lutris, Heroic, Bottles — pre-configured and kept current. Controllers plug in and work. Games from Steam, Epic, GOG, Battle.net and classic discs run. Low-latency kernel. No driver archaeology.',
     wink: "The \"Ultimate\" edition. Slapped with a gamer skin by the door company, sold as a premium tier. Here, it's just the fourth download button. Built on Bazzite's work — we owe them a beer.",
     bestFor: 'Gaming rigs, Steam Deck friends',
     minSpec: '8 GB RAM, 2016-or-later x86-64, a GPU you like',
-    color: 'feast',
+    color: 'braai',
     rgb: '#6B2C39',
   },
 ];
@@ -60,7 +60,7 @@ const editions = [
   <div class="max-w-6xl mx-auto px-6 sm:px-8">
     <div class="flex items-center gap-3 text-sm font-mono text-ink-500 mb-6">
       <span>02</span>
-      <span class="w-8 h-px bg-broth-light opacity-60"></span>
+      <span class="w-8 h-px bg-padkos-light opacity-60"></span>
       <span class="tracking-widest uppercase text-xs">The four editions</span>
     </div>
 
@@ -68,7 +68,7 @@ const editions = [
       <div class="col-span-12 md:col-span-8">
         <h2 class="font-display text-4xl sm:text-5xl md:text-6xl leading-[1.05] tracking-tight mb-6">
           Four recipes,<br />
-          <span class="italic text-broth">one kitchen.</span>
+          <span class="italic text-padkos">one kitchen.</span>
         </h2>
         <p class="max-w-prose text-lg text-ink-700 leading-relaxed">
           Every edition is built from the same pipeline, signed with the same keys, and receives the same automatic rollback-safe updates. You're picking a flavor, not a fork.
@@ -85,7 +85,7 @@ const editions = [
     </div>
 
     <div class="mt-12 flex justify-center">
-      <DoorArch variant="divider" class="w-40 h-8 text-broth" />
+      <DoorArch variant="divider" class="w-40 h-8 text-padkos" />
     </div>
   </div>
 </section>

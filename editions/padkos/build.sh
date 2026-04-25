@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Broth — older hardware / 4 GB RAM edition.
+# Padkos — older hardware / 4 GB RAM edition.
 #
 # Strategy: start from Aurora (same base as Hearty) and trim the heavier
 # desktop apps an old laptop doesn't need on first boot. Anything we strip
@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-echo "::group::Broth build"
+echo "::group::Padkos build"
 
 # --- Strip heavyweights -----------------------------------------------------
 # `|| true` per group: if upstream Aurora drops one of these in the future,
@@ -44,7 +44,7 @@ dnf5 -y remove \
     || true
 
 # --- Light additions --------------------------------------------------------
-# Nothing yet. Hearty's 'tmux' line is intentionally not mirrored — Broth's
+# Nothing yet. Hearty's 'tmux' line is intentionally not mirrored — Padkos's
 # audience is least likely to open a terminal. Keep the surface small.
 
 # --- Shared system files ----------------------------------------------------

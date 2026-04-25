@@ -24,7 +24,7 @@ export default {
           400: '#A89F96',
           300: '#C7BFB5',
         },
-        broth: {
+        padkos: {
           DEFAULT: '#8B5A3C',
           dark: '#6F4328',
           light: '#B5835E',
@@ -44,7 +44,7 @@ export default {
         hearty: '#C66B3D',
         chunky: '#B04638',
         bubbles: '#7A8868',
-        feast: '#6B2C39',
+        braai: '#6B2C39',
       },
       borderRadius: {
         'soft': '20px',
