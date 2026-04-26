@@ -182,7 +182,7 @@ The smaller-download problem is solved separately via the netinstall variant (se
 
 1. **KDE Plasma on every edition for v0.1.** No XFCE/LXQt variants now. If v0.2 evidence shows the need for a lighter edition, add a *new* (5th) edition rather than swap Padkos's DE underneath users — see §5 for the full reasoning.
 2. **ISO size optimisation is deferred to v0.2.** v0.1 ships at the natural Aurora-derived size (~5 GB) and we don't oversell "small download" in marketing. Reframe Padkos's promise from "smaller install" to "fast on old hardware" / "less default-app pressure" / "offline-first-boot" — promises we can actually deliver.
-3. **A netinstall ISO variant is the planned answer for slow-connection users in v0.2.** ~150 MiB ISO that pulls the OCI image from GHCR at install time and runs `bootc switch` to deploy the right edition. Same install experience after the network step. Doesn't sacrifice the KDE identity on the running system.
+3. **A netinstall ISO variant ships alongside the full ISO for v0.2 — both, not either.** ~150 MiB ISO that pulls the OCI image from GHCR at install time and runs `bootc install to-disk` to deploy the chosen edition. Same install experience after the network step. The website's download page offers both options per edition: "Full (5 GB, install offline)" or "Net (150 MB, install over wifi)" — let the user pick based on their connection and circumstance. Padkos's offline-first-boot promise still applies to the full ISO; the netinstall variant by definition assumes wifi at install time.
 
 **Cleanup work for v0.1 (truthfulness, not optimisation):**
 

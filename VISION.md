@@ -212,7 +212,8 @@ Four big buttons, labelled clearly, with a short description under each. A fallb
 | Base | Universal Blue (Fedora atomic desktop) | Only production-ready atomic desktop lineage |
 | Build | Containerfile per edition, GitHub Actions | Free CI, cached layers, cross-platform |
 | Image registry | `ghcr.io/macrosofty/<edition>` | Free, unlimited pulls, standard in this ecosystem |
-| ISO builder | `bootc-image-builder` | Official tool for OCI → ISO, actively maintained |
+| ISO builder | `jasonn3/build-container-installer` | The canonical UBlue ISO pipeline (same as Bazzite/Bluefin/Aurora). We tried `bootc-image-builder` first and hit GPG-path issues with disabled .repo files; jasonn3 accepts a `repos:` whitelist that sidesteps that. |
+| ISO formats offered | **Full + Netinstall, per edition** (netinstall lands v0.2) | Full ISO (~5 GB) carries the whole OS; netinstall ISO (~150 MB) pulls the OCI from GHCR at install time. Website download page offers both per edition — user picks based on connection. Padkos's offline-first-boot promise applies to the Full ISO only. |
 | **ISO hosting** | **SourceForge** | **Free, mirrored worldwide, no bandwidth cost to us. Honest caveat: SF had adware scandals ~2013–2016 and Linux community memory is long; we address this in the FAQ by linking direct-download URLs that skip SF's UI where possible.** |
 | Website | Static (**Astro 5.x + Tailwind 3.x via `@astrojs/tailwind`**) on Cloudflare Pages | Free tier, zero JS shipped to browser, self-hosted fonts (no external CDN calls, no tracking). Tailwind 4 + `@tailwindcss/vite` migration is a future job — low priority |
 | License | Apache 2.0 | Matches Universal Blue upstream |
