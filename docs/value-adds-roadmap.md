@@ -32,6 +32,18 @@ Two design constraints on every feature here:
 
 The combined effect: a person in Cape Town gets the full experience plus their local touches; a person in Cape Cod gets the same warmth without the in-jokes they'd miss.
 
+## Design principle: every setup task is a friendly screen
+
+This is a **cross-cutting principle**, not a feature in itself, but it shapes how every feature here should be designed.
+
+Validated empirically in the founder's homelab work (2026-04 sessions): wrapping complex setup tasks in interactive screens — choose-from-options + one-click — dramatically lowers the friction of doing something for the first time. People who'd never edit a config file will happily click through a wizard.
+
+**The rule:** if a feature in this list requires a config file edit, a CLI command, or knowing what the right service name is, it's not done. Every setup task in Macrosofty gets a friendly screen with sensible defaults, plain-English explanations, and a "skip" or "later" option.
+
+This applies to: the first-boot wizard (#1), the recovery button (#4), Make it yours (#2), backup setup (#13), family mode templates (#15), the share & serve panel (#39), printer setup (#23), KDE Connect onboarding (#24), email setup (#11), and pretty much everything in tiers 1–4.
+
+It does NOT mean we hide power-user options — they stay available in System Settings or via CLI for anyone who wants them. The default *experience* is the friendly screen; the *underlying flexibility* of Linux is preserved.
+
 ---
 
 ## At a glance
@@ -76,6 +88,7 @@ The combined effect: a person in Cape Town gets the full experience plus their l
 | 36 | Built-in coding tutorial | 6 — Stretch | Multi-month | International |
 | 37 | System health AI (proactive watcher) | 6 — Stretch | Multi-month | International |
 | 38 | XFCE edition for sub-2 GB-RAM hardware | 6 — Stretch (parked) | Multi-month | International |
+| 39 | **"Share & Serve" panel — host services from your desktop** | 2 — High-impact | Medium-large | International |
 
 Effort key: **Trivial** (afternoon), **Small** (weekend), **Medium** (a couple of weekends to a month), **Large** (months), **Multi-month** (real serious project), **rolling** (continuous gardening).
 
@@ -574,6 +587,82 @@ Local model watches your system, notices "your laptop runs hot when you're on Zo
 
 **Risk:** proactive AI suggestions can be intrusive. Default off, opt-in, with full kill-switch.
 
+### #39: "Share & Serve" panel — host services from your desktop
+
+**Status:** idea
+**Audience:** hardware recycler (their old laptop becomes a server), relative-supporter (set up family media), prosumer (host their own stuff), anyone who's curious about a homelab but never knew where to start
+**Effort:** Medium-large (2–4 months for a polished v1)
+**Tier:** **2 — High-impact (would be transformative if it works)**
+
+A first-class panel for **running personal services** from a regular Macrosofty desktop. Make Jellyfin / Syncthing / Pi-Hole / Vaultwarden / Immich as easy to set up as installing a Flatpak.
+
+**Conceived 2026-04-26** during a brainstorming pass. Inspired by the founder's homelab work: the "wrapped in a friendly screen" pattern that made Proxmox/Immich/etc. setup actually pleasant. We can do that for personal-server services on a desktop OS — and nobody else does.
+
+**The user experience:**
+
+1. User opens "Share & Serve" panel from System Settings (or first-boot wizard suggests it).
+2. Sees a curated grid of pre-configured services with short, plain descriptions:
+   - **Jellyfin** — "Stream your movies and music to your TV, phone, and other computers"
+   - **Syncthing** — "Keep folders synced between your devices, no cloud account needed"
+   - **Pi-Hole** — "Block ads on every device on your wifi"
+   - **Vaultwarden** — "Run your own password manager"
+   - **Immich** — "Like Google Photos, but it stays on your computer"
+   - **HomeAssistant** — "Smart-home dashboard"
+   - **Audiobookshelf** — "Stream your audiobooks and podcasts"
+   - **Nextcloud (AIO)** — "Your own cloud storage + calendar + contacts"
+3. Click any service → a setup wizard:
+   - Pick a storage folder ("where are your movies?" — file picker, defaults to `~/Media`)
+   - Optionally set a name and password
+   - Network setup: "Just my computers on this wifi" (mDNS, opens just LAN ports) or "Anywhere via Tailscale" (one-click Tailscale integration if configured) or "Public on the internet" (warning + Cloudflare Tunnel walkthrough)
+   - Click "Set it up" → progress bar, ~30 seconds → done.
+4. Service is now running. Panel shows "Jellyfin is running at `http://padkos.local:8096`. [Copy link] [Send to phone] [Stop service]".
+5. Auto-starts on boot (systemd-managed). Updates auto via the same atomic-image-update story as the rest of the OS — except containerised services, which can update independently.
+
+**What we ship:**
+- A KCM (KDE Config Module) called Share & Serve.
+- A curated catalog of ~10 services to start (the list above), each with a tested **podman Quadlet template** — declarative systemd unit + container spec.
+- Storage chooser that handles permissions correctly (no "why can't Jellyfin see my files?" frustrations).
+- mDNS broadcast (Avahi already on every edition) so other devices on the wifi find services without IP-typing.
+- Optional firewall rule helpers (firewalld is already there).
+- Optional Tailscale integration for sharing-beyond-the-wifi.
+- A "stop" + "remove" + "update" UI per service.
+- An "advanced mode" toggle for users who want to edit the Quadlet directly.
+
+**Why this matters — the bigger product position:**
+
+This turns Macrosofty from "a nice desktop Linux" into **"the friendly self-hosting OS"**. Currently the self-hosting space splits into:
+- **Servers/NAS** (TrueNAS, unRAID, Synology DSM) — powerful, but you buy a separate machine, can't really use it for browsing/Netflix/work.
+- **Desktop Linux** (Ubuntu, Fedora, etc.) — full desktops, but running services means CLI/Docker fluency.
+
+**Macrosofty would be the first to make a regular laptop simultaneously the user's daily-driver desktop AND a friendly-to-set-up personal server.** That's a defensible niche. Hardware-recycler persona doubly benefits: the old laptop becomes a media server *and* still works for the user's basic browsing.
+
+**The "share with peeps on the network" use case is the exact starter scenario:** someone has a folder of holiday videos, wants their family to watch on the TV. Today: install Jellyfin somehow, configure ports, type IP addresses to phones, hope it works. With Share & Serve: open panel, pick Jellyfin, point at folder, click set-up, copy `padkos.local:8096` to the family WhatsApp group.
+
+**Implementation notes:**
+- **Foundation:** podman Quadlets (systemd-managed containers via `.container` files in `/etc/containers/systemd/`). Aurora ships podman; Bazzite ships full container tooling. Already there.
+- **Storage permissions:** containers need to read user's media folders. Two approaches: bind-mount with `:Z` SELinux relabel (simpler, slight permission warning) or rootless containers in user mode (more secure, more setup). Probably ship rootless-by-default with an "advanced" toggle.
+- **Update story:** services are containers, so they update independently of the host atomic image. Run `podman auto-update` weekly via systemd timer; show the user "1 update available" in the panel.
+- **Storage cleanup:** when a user removes a service, the panel asks "delete the data folder too?" — important so users don't accidentally lose their movies.
+
+**Target editions:**
+- All four KDE editions (and the future ARM Bokkie). Padkos's resource constraints might mean we recommend "stick to one or two services at a time on Padkos" but technically nothing stops it.
+- Chunky-Modern is the natural fit (more RAM headroom; user is already a knowledge-worker).
+- Hardware-recycler scenario maps mostly to Padkos / Chunky-LJ.
+
+**Risks:**
+- **Network configuration variability.** Some routers don't do mDNS well. Some ISPs block the standard ports. Need solid fallbacks (manual IP entry, Tailscale).
+- **Container update failures** could leave a service in a bad state. The panel needs to show "this service crashed — see logs / restart / rollback".
+- **Security.** Exposing services even on a LAN is more attack surface than a closed desktop. Default everything to LAN-only, require explicit user action to expose to the internet, big warnings around the public-internet option.
+
+**Mzansi flavour notes:** The Tailscale integration is especially valuable for SA users with intermittent connectivity — your media server's accessible from anywhere even if your home IP changes constantly. Could lean into this in marketing.
+
+**Open questions:**
+- Curated 10 services or community-contributed catalog? (Recommend: start curated, expand to community-contributed in a later version after we've proven the model.)
+- How much do we depend on Tailscale (Macrosofty's not associated with them) vs build our own networking abstractions?
+- What's the relationship between Share & Serve and the existing "system update" flow — do they share UI patterns?
+
+---
+
 ### #38: XFCE edition for sub-2 GB-RAM hardware
 
 **Status:** parked (no demand evidence yet)
@@ -616,6 +705,7 @@ Practical recommendation, given the current state of the project (v0.1 building,
 - **Land v0.1** (the four editions, branded, tested, public). Currently in progress.
 - **v0.2 (1–3 months out):** ship **#1 (First-Boot Wizard)** and **#4 (Recovery button)**. Confirmed in conversation 2026-04-26. Both medium-or-smaller effort, both highest impact-per-effort, both addressable by one developer in available time. The wizard replaces Aurora's CLI-flavoured terminal motd; the recovery button surfaces the atomic-rollback superpower we already have but nobody knows about.
 - **v0.3 (3–6 months out):** ship #2 (Make It Yours panel) — the brand-defining marquee feature.
+- **v0.4 candidate (6–12 months out):** ship **#39 (Share & Serve panel)** — turns Macrosofty into "the friendly self-hosting desktop OS". Major engineering investment but a real product-positioning differentiator. Hardware-recycler persona scenario — "your old laptop is now your family's Jellyfin server" — is the headline use case.
 - **In the background, rolling:** #5 (plain-language errors), #18 (why did this happen?), and the SA-specific Tier 5 items as the founder's energy and language partners allow.
 - **Stretch: 1+ year out:** start sketching #6 (Local AI Helper). Mature LLM-quantization tooling and Plasma 6 stability would help here; both are improving fast.
 
