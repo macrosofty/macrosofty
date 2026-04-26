@@ -45,8 +45,11 @@ jobs:
     env:
       EDITION: ${{ matrix.edition }}
       SELECTED_EDITION: ${{ inputs.edition || 'all' }}
-      FEDORA_NETINST_URL: "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/iso/Fedora-Server-netinst-x86_64-43-1.4.iso"
-      FEDORA_NETINST_FILE: "Fedora-Server-netinst-x86_64-43-1.4.iso"
+      # Fedora 43 release ISO. Bumping the minor (43-1.X.iso) tracks
+      # respins; current as of 2026-04-26 is 1.6. Update when a respin
+      # ships and the URL 404s.
+      FEDORA_NETINST_URL: "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/iso/Fedora-Server-netinst-x86_64-43-1.6.iso"
+      FEDORA_NETINST_FILE: "Fedora-Server-netinst-x86_64-43-1.6.iso"
 
     steps:
       - name: Skip non-selected edition
