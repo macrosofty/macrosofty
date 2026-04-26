@@ -10,10 +10,10 @@ echo "::group::Chunky build"
 # --- Identity ---------------------------------------------------------------
 /ctx/scripts/generate-os-release.sh chunky "${MACROSOFTY_VERSION:-0.1.0-dev}"
 
-# Aurora DX does most of the heavy lifting. Leave this minimal until we know
-# a concrete gap we want to fill.
-dnf5 install -y \
-    tmux
+# Aurora DX does most of the heavy lifting — Cockpit, virt-manager, KVM,
+# Docker, VS Code, podman-bootc, ROCm, bcc/bpftrace, and Aurora's full ~70-
+# package base set on top (see docs/iso-size-analysis.md §3). Leave this
+# minimal until we know a concrete gap we want to fill.
 
 if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/dev/null)" ]; then
     cp -r /ctx/system_files/shared/. /

@@ -17,38 +17,23 @@ echo "::group::Padkos build"
 # --- Identity ---------------------------------------------------------------
 /ctx/scripts/generate-os-release.sh padkos "${MACROSOFTY_VERSION:-0.1.0-dev}"
 
-# --- Strip heavyweights -----------------------------------------------------
-# `|| true` per group: if upstream Aurora drops one of these in the future,
-# we don't want a missing package to fail the whole build. Each group is
-# independently survivable.
+# --- Strip heavyweights (none, currently) ----------------------------------
+# An OCI-layer audit on 2026-04-26 (docs/iso-size-analysis.md) proved that
+# Aurora upstream does NOT ship any of: akonadi-server, kmail, kontact,
+# korganizer, kaddressbook, kalendar, kdepim, krita, kdenlive, digikam.
+# Earlier `dnf5 remove` calls for these were no-ops — zero whiteouts in
+# the resulting layer. Removed to stop pretending Padkos is structurally
+# lighter than Hearty when we're inheriting Aurora unchanged.
 #
-# What we *don't* strip (despite earlier instinct): LibreOffice. Real-world
-# testing on a fresh Padkos install (2026-04-25) confirmed the audience
-# actually needs an office suite — "no office" is broken for the
-# old-laptop / second-life user, not a feature. The disk weight (~700 MB)
-# is fine on a 4 GB-RAM box; the runtime weight is zero unless they open it.
-
-# KDE PIM stack (Akonadi, KMail, Kontact, KOrganizer, KAddressBook).
-# Akonadi runs a per-user MariaDB-equivalent in the background; on a 4 GB
-# box that's the single biggest "why is this slow" culprit, and the audience
-# is more likely to use webmail than a desktop mail client anyway.
-dnf5 -y remove \
-    'akonadi*' \
-    'kmail*' \
-    'kontact*' \
-    'korganizer*' \
-    'kaddressbook*' \
-    'kalendar*' \
-    'kdepim*' \
-    || true
-
-# Heavy creative-pro apps — Flathub has current builds of all of these,
-# one-click installable via Discover for the rare user who wants them.
-dnf5 -y remove \
-    krita \
-    kdenlive \
-    digikam \
-    || true
+# Padkos's actual differentiation lives elsewhere: offline-first-boot
+# Firefox RPM (below), and the planned LibreOffice RPM (next change),
+# plus reduced firstboot Flatpak pressure.
+#
+# If we ever want to genuinely shrink the deployed-system size (not the
+# OCI image — see iso-size-analysis.md §3.3 for why), candidates that DO
+# exist in Aurora upstream are: Linuxbrew (~132 MiB), Noto CJK fonts
+# (~150 MiB), and the Tesseract OCR language packs except `eng` (~80 MiB).
+# Keep this commented for the next maintainer to find.
 
 # --- Essential additions ----------------------------------------------------
 # Aurora ships Firefox as a Flatpak via firstboot, which depends on the

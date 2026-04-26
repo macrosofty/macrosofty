@@ -14,11 +14,10 @@ echo "::group::Hearty build"
 
 # --- Packages ---------------------------------------------------------------
 # Kept deliberately short. Aurora already ships a full KDE desktop, Flatpak,
-# codecs, and the sensible Universal Blue tooling. Every line added here is a
-# line we commit to maintaining.
-
-dnf5 install -y \
-    tmux
+# codecs, and the sensible Universal Blue tooling — including tmux, vim, zsh,
+# fish, htop, fastfetch, distrobox, and ~70 others (see
+# docs/iso-size-analysis.md §3.1 for the full inherited set). Every line
+# added here is a line we commit to maintaining; nothing earns it yet.
 
 # --- Shared system files ----------------------------------------------------
 # Copy anything from /ctx/system_files/shared into the image rootfs.
