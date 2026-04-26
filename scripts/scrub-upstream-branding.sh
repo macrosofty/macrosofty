@@ -115,4 +115,23 @@ while IFS= read -r -d '' f; do
 done < <(find /etc/profile.d /etc/motd.d /etc/update-motd.d /etc/bashrc.d /etc/zsh \
             -type f \( -name '*.sh' -o -name 'bashrc' -o -name 'zshrc' \) -print0 2>/dev/null)
 
+# --- Universal Blue ublue-os helpers ---------------------------------------
+# UBlue ships a /usr/share/ublue-os/ tree with the user motd content
+# ("Welcome to Aurora", links, ujust recipes), brewfiles, justfiles, and
+# fastfetch config. Aurora customises the motd content with their brand;
+# we rewrite to ours. Limit to text-shaped files (.md, .txt, .sh, .just,
+# .jsonc, .json, .conf, .toml, .yml, .yaml) so binary blobs are skipped.
+while IFS= read -r -d '' f; do
+    [ -f "$f" ] || continue
+    if grep -q -iE "$brand_regex" "$f" 2>/dev/null; then
+        sed -i "$GREETING_SED_PROGRAM" "$f"
+    fi
+done < <(find /usr/share/ublue-os \
+            -type f \( -name '*.md' -o -name '*.txt' -o -name '*.sh' \
+                       -o -name '*.just' -o -name '*.justfile' \
+                       -o -name 'Justfile' -o -name 'Brewfile' \
+                       -o -name '*.jsonc' -o -name '*.json' \
+                       -o -name '*.conf' -o -name '*.toml' \
+                       -o -name '*.yml' -o -name '*.yaml' \) -print0 2>/dev/null)
+
 echo "::endgroup::"

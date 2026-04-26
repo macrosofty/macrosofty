@@ -29,3 +29,6 @@ dist/
 out/
 build/
 *.iso
+
+# Test screenshots (saved during QEMU tests; not source-of-truth)
+Screenshot_*.png
