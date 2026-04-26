@@ -49,7 +49,6 @@ jobs:
 
     permissions:
       contents: read
-      packages: read
 
     env:
       # All untrusted inputs go through env first; shell only sees $VAR.
@@ -135,22 +134,6 @@ jobs:
         with:
           string: ghcr.io/${{ env.OWNER }}
 
-      - name: Pre-pull source image (private GHCR auth)
-        if: env.skip != 'true'
-        # jasonn3 internally uses skopeo to fetch the source image and gets
-        # `unauthorized` against our private packages. Bazzite's images are
-        # public so they don't hit this. Pre-pull into rootful podman storage
-        # and pass image_src=containers-storage:... to jasonn3 — it then
-        # skopeo-copies from local storage and never touches the registry.
-        env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GHCR_USER: ${{ github.actor }}
-        run: |
-          echo "$GHCR_TOKEN" | sudo podman login ghcr.io -u "$GHCR_USER" --password-stdin
-          IMAGE="ghcr.io/${OWNER}/${EDITION}:${IMAGE_TAG}"
-          sudo podman pull "$IMAGE"
-          sudo podman images "ghcr.io/${OWNER}/${EDITION}"
-
       - name: Build ISO
         if: env.skip != 'true'
         id: build
@@ -159,14 +142,14 @@ jobs:
         # bootc-image-builder eagerly reads every .repo file in the source
         # image, including disabled ones with stale GPG-key paths (this is
         # what tripped Braai on the previous bootc-image-builder pipeline).
+        # No image_src override: packages are public, so jasonn3's internal
+        # skopeo fetches from ghcr.io directly — same path Bazzite/Bluefin/
+        # Aurora use.
         uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24 # v1.4.0
         with:
           arch: x86_64
           image_name: ${{ matrix.edition }}
           image_repo: ${{ steps.registry_case.outputs.lowercase }}
-          # Use the pre-pulled local copy via skopeo's containers-storage
-          # transport, bypassing the registry-auth path.
-          image_src: containers-storage:ghcr.io/${{ env.OWNER }}/${{ matrix.edition }}:${{ env.IMAGE_TAG }}
           variant: 'Kinoite'
           version: ${{ matrix.major_version }}
           image_tag: ${{ env.IMAGE_TAG }}
