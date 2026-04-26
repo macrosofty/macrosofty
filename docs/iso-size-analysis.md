@@ -172,6 +172,10 @@ The specific candidate weighed: an XFCE-flavoured Padkos. Real considerations on
 - **v0.2 (contingent):** if real-user feedback after v0.1 shows KDE Padkos genuinely fails on its target hardware, the answer is **add a new lighter edition** (a 5th brand) rather than swap Padkos's DE underneath users. That preserves the four KDE-cohesive editions for everyone who's already on them, and gives a clean home for the lighter variant. The new edition would need its own food-themed name and a real upstream story — possibly forking Fedora atomic ourselves if no atomic-XFCE base has emerged by then.
 - **Trigger to revisit:** repeated GitHub Discussions reports of "Padkos won't run on my X" with X being target Padkos hardware (4 GB RAM, 2014-era). One-off complaints aren't enough; a pattern is.
 
+**Validation 2026-04-26 (same day, real test):** founder ran Padkos in QEMU at **1 CPU + 3 GB RAM** — *tighter than the 4 GB nominal target* — and reports it "works like a bomb". KDE Plasma 6 + the Padkos package set are demonstrably fine on 3 GB / 1 CPU hardware. **The XFCE-for-Padkos question is closed for v0.1 and v0.2.**
+
+The case for an XFCE edition narrows to **genuinely ultra-low-RAM hardware** — sub-2 GB machines, pre-2010 era. That's a different audience and a much smaller addressable user base than Padkos's. Captured in `docs/value-adds-roadmap.md` as a Tier 6 stretch (rank #38) for if/when that demand materialises; not a v0.x concern.
+
 The smaller-download problem is solved separately via the netinstall variant (see §6). That gives slow-connection users a sub-200-MB install path without compromising the KDE identity on the running system.
 
 ---
