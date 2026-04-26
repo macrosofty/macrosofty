@@ -51,6 +51,37 @@ for f in /etc/*-release; do
     fi
 done
 
+# --- Shell-login greeting scripts ------------------------------------------
+# Aurora ships /etc/profile.d/*.sh scripts that print "Welcome to Aurora"
+# plus links to their docs / issue tracker on every interactive shell
+# login. Same pattern Bazzite uses. Rewrite both the brand strings AND
+# the URLs so the welcome stays useful but points at our channels. Also
+# covers /etc/motd.d and /etc/update-motd.d (Debian-derived but some
+# tools look there) for completeness.
+scrub_aurora_strings() {
+    local f="$1"
+    sed -i '
+        s|docs\.getaurora\.dev|macrosofty.org|g
+        s|getaurora\.dev|macrosofty.org|g
+        s|docs\.bazzite\.gg|macrosofty.org|g
+        s|bazzite\.gg|macrosofty.org|g
+        s|github\.com/ublue-os/aurora|github.com/macrosofty/macrosofty|g
+        s|github\.com/ublue-os/bazzite|github.com/macrosofty/macrosofty|g
+        s/Aurora/Macrosofty/g
+        s/aurora/macrosofty/g
+        s/Bazzite/Macrosofty/g
+        s/bazzite/macrosofty/g
+    ' "$f"
+}
+
+while IFS= read -r -d '' f; do
+    [ -f "$f" ] || continue
+    if grep -q -iE 'aurora|bazzite' "$f" 2>/dev/null; then
+        scrub_aurora_strings "$f"
+    fi
+done < <(find /etc/profile.d /etc/motd.d /etc/update-motd.d /etc/bashrc.d /etc/zsh \
+            -type f \( -name '*.sh' -o -name 'bashrc' -o -name 'zshrc' \) -print0 2>/dev/null)
+
 # --- Other user-visible upstream strings -----------------------------------
 # Aurora's plasma-welcome / first-run app branding lives in a few files.
 # This is best-effort: we don't yet know the exact set of paths upstream

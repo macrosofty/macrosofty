@@ -61,6 +61,13 @@ EOF
 echo "Macrosofty ${PRETTY} 43" > /etc/system-release
 ln -sf system-release /etc/redhat-release 2>/dev/null || true
 
+# /etc/hostname — Aurora ships this set to "aurora", which means a fresh
+# Padkos install lands at "user@aurora" in the terminal until the user
+# picks something else. Override to "macrosofty" so the default matches
+# the brand. The user can change it in Settings → System → About at any
+# time, or pick a hostname interactively in Anaconda during install.
+echo "macrosofty" > /etc/hostname
+
 # /etc/os-release is conventionally a symlink to /usr/lib/os-release on
 # systemd systems. Force the symlink in case Aurora ships a real file.
 ln -sf ../usr/lib/os-release /etc/os-release
