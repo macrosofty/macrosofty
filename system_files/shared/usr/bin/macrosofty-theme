@@ -67,22 +67,53 @@ apply_kickoff_icon() {
     local src="$pack_dir/$component"
     [ -f "$src" ] || { info "  skip kickoff icon (not in pack)"; return 0; }
 
-    local dest_dir="/usr/share/icons/hicolor/scalable/places"
-    mkdir -p "$dest_dir"
-    install -m 0644 "$src" "$dest_dir/start-here-kde.svg"
-    install -m 0644 "$src" "$dest_dir/start-here.svg"
+    # Step 1 — drop our SVG at the standard KDE icon-theme names.
+    # KDE looks up `start-here-kde` and `distributor-logo` in the icon
+    # theme path. Putting our SVG in hicolor/scalable wins for themes
+    # that fall back to hicolor.
+    local places_dir="/usr/share/icons/hicolor/scalable/places"
+    local apps_dir="/usr/share/icons/hicolor/scalable/apps"
+    mkdir -p "$places_dir" "$apps_dir"
+    install -m 0644 "$src" "$places_dir/start-here-kde.svg"
+    install -m 0644 "$src" "$places_dir/start-here.svg"
+    install -m 0644 "$src" "$apps_dir/distributor-logo.svg"
+    install -m 0644 "$src" "$apps_dir/distributor-logo-symbolic.svg"
 
-    # If the pack has a symbolic variant, use it; otherwise reuse the same SVG.
+    # Symbolic variant for monochrome contexts (e.g. status-bar uses).
     if [ -f "$pack_dir/icons/start-here-symbolic.svg" ]; then
-        install -m 0644 "$pack_dir/icons/start-here-symbolic.svg" "$dest_dir/start-here-symbolic.svg"
+        install -m 0644 "$pack_dir/icons/start-here-symbolic.svg" "$places_dir/start-here-symbolic.svg"
     else
-        install -m 0644 "$src" "$dest_dir/start-here-symbolic.svg"
+        install -m 0644 "$src" "$places_dir/start-here-symbolic.svg"
     fi
+
+    # Step 2 — overwrite upstream-vendor branding files in place. KDE
+    # themes (Breeze, Plasma look-and-feel packages) sometimes hardcode
+    # paths to specific upstream files like `distributor-logo.svg` or
+    # `auroralogo-*.svg`. Layering alongside doesn't beat those —
+    # we have to replace the bytes Aurora ships. Find by filename so
+    # we don't depend on knowing the exact paths upstream uses; works
+    # across upstream re-organisations.
+    local replaced=0
+    while IFS= read -r -d '' file; do
+        cp -f "$src" "$file"
+        replaced=$((replaced + 1))
+    done < <(find /usr/share -type f \( \
+        -name 'distributor-logo*.svg' \
+        -o -name 'auroralogo-*.svg' \
+        -o -name 'aurora-banner.svg' \
+        -o -name 'aurora-logo*.svg' \
+    \) -print0 2>/dev/null)
 
     if command -v gtk-update-icon-cache >/dev/null 2>&1; then
         gtk-update-icon-cache -q -t /usr/share/icons/hicolor/ 2>/dev/null || true
+        # Also rebuild Breeze's cache if it's installed, since we now
+        # have a chance our icons get hit there too.
+        for theme_dir in /usr/share/icons/breeze /usr/share/icons/breeze-dark; do
+            [ -d "$theme_dir" ] && \
+                gtk-update-icon-cache -q -t "$theme_dir" 2>/dev/null || true
+        done
     fi
-    info "  kickoff icon -> $dest_dir/start-here-kde.svg"
+    info "  kickoff icon -> hicolor + ${replaced} upstream files overwritten"
 }
 
 apply_wallpaper() {
@@ -163,8 +194,21 @@ apply_plymouth_theme() {
     cp -a "$theme_dir/." "$dest/"
 
     if command -v plymouth-set-default-theme >/dev/null 2>&1; then
-        plymouth-set-default-theme macrosofty || info "  warning: plymouth-set-default-theme failed"
-        info "  Plymouth theme -> macrosofty (initramfs regen happens at next dracut run)"
+        # --rebuild-initrd is the load-bearing flag here. Without it,
+        # plymouthd.conf gets updated but the initramfs still carries
+        # whatever theme was baked in at upstream-image-build time
+        # (e.g. Aurora's). The user then sees the wrong splash on every
+        # boot until the next manual dracut.
+        if plymouth-set-default-theme --rebuild-initrd macrosofty 2>&1; then
+            info "  Plymouth theme -> macrosofty (initramfs rebuilt)"
+        else
+            # If --rebuild-initrd failed (e.g. dracut can't run in this
+            # container context), at least set the config so a later
+            # dracut picks it up.
+            plymouth-set-default-theme macrosofty 2>/dev/null || true
+            info "  warning: --rebuild-initrd failed; theme set in plymouthd.conf only"
+            info "  Plymouth will switch on next system update / dracut run"
+        fi
     else
         info "  warning: plymouth-set-default-theme not found; theme installed but not active"
     fi

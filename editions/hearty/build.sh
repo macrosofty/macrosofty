@@ -44,6 +44,13 @@ fi
 # lands; same script either way.
 macrosofty-theme apply default
 
+# --- Scrub upstream branding from inherited menu items -----------------
+# Rewrites "Aurora" → "Macrosofty" in the Name/Comment/etc. fields of
+# inherited .desktop entries (e.g. "Aurora Offline Docs" → "Macrosofty
+# Offline Docs"). Doesn't touch Exec= so the underlying program still
+# launches fine.
+/ctx/scripts/scrub-upstream-branding.sh
+
 # --- Services ---------------------------------------------------------------
 # Leave upstream defaults alone unless we have a reason. Aurora's firstboot
 # flow handles the rest.

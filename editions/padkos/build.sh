@@ -31,14 +31,22 @@ echo "::group::Padkos build"
 dnf5 -y remove plasma-welcome || true
 
 # --- Essential additions ----------------------------------------------------
-# Aurora ships Firefox as a Flatpak via firstboot, which depends on the
-# firstboot service firing AND the user having internet at first login.
-# For a "works on first boot, even offline" experience, we install the
-# Firefox RPM directly. Same logic for the offline-first-boot promise —
-# see docs/app-curation.md §4.4.
+# Aurora ships Firefox + Thunderbird as Flatpaks via firstboot, which
+# depends on the firstboot service firing AND the user having internet
+# at first login. For a "works on first boot, even offline" experience
+# (the Padkos promise — see docs/app-curation.md §4.4), we install:
+#
+#   - Firefox RPM      — captive-portal authentication, local files
+#   - LibreOffice RPM  — offline document creation, the load-bearing
+#                         "documents" word in Padkos's promise
+#
+# Thunderbird intentionally stays as Aurora's Flatpak — fresh email
+# setup needs internet anyway, so RPM-vs-Flatpak makes no functional
+# difference for that one. See docs/app-curation.md §4.4 for the
+# rationale.
 #
 # `jq` is needed by the macrosofty-theme apply script below.
-dnf5 -y install firefox jq || true
+dnf5 -y install firefox libreoffice jq || true
 
 # --- Shared system files ----------------------------------------------------
 # Includes the theme pack assets at /usr/share/macrosofty/themes/default/
@@ -53,6 +61,9 @@ fi
 # background, Look-and-Feel. Re-runnable later by the user via
 # `sudo macrosofty-theme apply <pack>` once we ship more packs.
 macrosofty-theme apply default
+
+# --- Scrub upstream branding from inherited menu items -----------------
+/ctx/scripts/scrub-upstream-branding.sh
 
 # --- Tidy the package metadata ----------------------------------------------
 dnf5 clean all

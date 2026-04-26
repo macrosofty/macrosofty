@@ -29,4 +29,7 @@ fi
 # --- Apply the default Macrosofty theme pack --------------------------------
 macrosofty-theme apply default
 
+# --- Scrub upstream branding ------------------------------------------------
+/ctx/scripts/scrub-upstream-branding.sh
+
 echo "::endgroup::"

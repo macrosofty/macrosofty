@@ -27,4 +27,9 @@ fi
 # --- Apply the default Macrosofty theme pack --------------------------------
 macrosofty-theme apply default
 
+# --- Scrub upstream branding (Bazzite-flavoured for this edition) ------
+# Same pattern as the Aurora editions but the script also catches
+# "bazzite" references in case any leak through.
+/ctx/scripts/scrub-upstream-branding.sh
+
 echo "::endgroup::"
