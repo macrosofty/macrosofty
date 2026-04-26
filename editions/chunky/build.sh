@@ -30,6 +30,6 @@ fi
 macrosofty-theme apply default
 
 # --- Scrub upstream branding ------------------------------------------------
-/ctx/scripts/scrub-upstream-branding.sh
+/ctx/scripts/scrub-upstream-branding.sh "$EDITION"
 
 echo "::endgroup::"

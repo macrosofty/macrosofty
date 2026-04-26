@@ -49,7 +49,7 @@ macrosofty-theme apply default
 # inherited .desktop entries (e.g. "Aurora Offline Docs" → "Macrosofty
 # Offline Docs"). Doesn't touch Exec= so the underlying program still
 # launches fine.
-/ctx/scripts/scrub-upstream-branding.sh
+/ctx/scripts/scrub-upstream-branding.sh "$EDITION"
 
 # --- Services ---------------------------------------------------------------
 # Leave upstream defaults alone unless we have a reason. Aurora's firstboot

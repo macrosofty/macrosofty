@@ -30,6 +30,6 @@ macrosofty-theme apply default
 # --- Scrub upstream branding (Bazzite-flavoured for this edition) ------
 # Same pattern as the Aurora editions but the script also catches
 # "bazzite" references in case any leak through.
-/ctx/scripts/scrub-upstream-branding.sh
+/ctx/scripts/scrub-upstream-branding.sh "$EDITION"
 
 echo "::endgroup::"

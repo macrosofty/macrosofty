@@ -63,7 +63,7 @@ fi
 macrosofty-theme apply default
 
 # --- Scrub upstream branding from inherited menu items -----------------
-/ctx/scripts/scrub-upstream-branding.sh
+/ctx/scripts/scrub-upstream-branding.sh "$EDITION"
 
 # --- Tidy the package metadata ----------------------------------------------
 dnf5 clean all
