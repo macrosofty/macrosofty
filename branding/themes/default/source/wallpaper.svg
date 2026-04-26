@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="55%" r="80%">
+      <stop offset="0%" stop-color="#2C1A0F"/>
+      <stop offset="100%" stop-color="#0B0604"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <g opacity="0.16" transform="translate(960, 580)">
+    <path d="M -220 240 V 0 A 220 220 0 0 1 220 0 V 240"
+          fill="none"
+          stroke="#E89A2B"
+          stroke-width="140"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+  </g>
+  <text x="1880" y="1050" font-family="sans-serif" font-size="22" fill="#E89A2B" opacity="0.35" text-anchor="end">macrosofty</text>
+</svg>

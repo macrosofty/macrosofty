@@ -1,0 +1,19 @@
+{
+  "name": "default",
+  "displayName": "Macrosofty Default",
+  "description": "The saffron-arch theme. Dark warm-charcoal wallpaper, saffron accents.",
+  "version": "0.1.0",
+  "author": "Macrosofty",
+  "license": "Apache-2.0",
+  "components": {
+    "kickoffIcon": "icons/start-here-kde.svg",
+    "wallpaper": "wallpaper-1920x1080.png",
+    "loginBackground": "login-bg.png",
+    "logo": "logo-256.png",
+    "motd": "motd",
+    "grubDistributor": "Macrosofty",
+    "plymouthTheme": "plymouth/",
+    "sddmBackground": "login-bg.png",
+    "lookAndFeel": "lookandfeel/"
+  }
+}

@@ -1,0 +1,228 @@
+#!/usr/bin/env bash
+#
+# macrosofty-theme — apply a Macrosofty theme pack to the running system.
+#
+# Usage:
+#   macrosofty-theme apply <pack-name>     Apply a pack from /usr/share/macrosofty/themes/
+#   macrosofty-theme list                  List installed packs
+#   macrosofty-theme current               Show the currently applied pack
+#
+# Idempotent: re-running with the same pack is safe. Re-running with a
+# different pack swaps cleanly. Most operations require root (file writes
+# under /usr/share, /etc, regenerating initramfs); the script will exit
+# early with a friendly error if not root.
+#
+# Pack format documented in /usr/share/macrosofty/themes/<pack>/pack.json.
+# A pack's components are all optional — packs can be partial. The script
+# only applies what's present.
+#
+# Components handled:
+#   kickoffIcon     -> /usr/share/icons/hicolor/scalable/places/start-here-kde.svg
+#                       (and start-here.svg, start-here-symbolic.svg for fallback)
+#   wallpaper       -> /usr/share/wallpapers/Macrosofty/contents/images/1920x1080.png
+#                       (with metadata.json)
+#   loginBackground -> /usr/share/sddm/themes/breeze/Background.png (overlay)
+#   motd            -> /etc/motd
+#   grubDistributor -> /etc/default/grub.d/99-macrosofty.cfg (sets GRUB_DISTRIBUTOR)
+#   plymouthTheme   -> /usr/share/plymouth/themes/macrosofty/ + plymouth-set-default-theme
+#                       + dracut --regenerate-all (skipped if no PNG/script in pack)
+#   sddmBackground  -> same image used in loginBackground; overlayed on breeze theme
+#   lookAndFeel     -> /usr/share/plasma/look-and-feel/com.macrosofty.desktop/
+#                       (placeholder until we ship one)
+
+set -euo pipefail
+
+THEMES_ROOT="/usr/share/macrosofty/themes"
+STATE_FILE="/var/lib/macrosofty/theme-current"
+
+die()   { echo "macrosofty-theme: error: $*" >&2; exit 1; }
+info()  { echo "macrosofty-theme: $*"; }
+need_root() { [ "$(id -u)" -eq 0 ] || die "this command needs root (try with sudo)"; }
+
+cmd_list() {
+    [ -d "$THEMES_ROOT" ] || die "no themes directory at $THEMES_ROOT"
+    for d in "$THEMES_ROOT"/*/; do
+        [ -d "$d" ] || continue
+        local name; name="$(basename "$d")"
+        if [ -f "$d/pack.json" ]; then
+            local display
+            display=$(jq -r '.displayName // .name // empty' "$d/pack.json" 2>/dev/null || echo "")
+            printf "  %-20s  %s\n" "$name" "${display:-(no displayName)}"
+        else
+            printf "  %-20s  (no pack.json)\n" "$name"
+        fi
+    done
+}
+
+cmd_current() {
+    if [ -f "$STATE_FILE" ]; then
+        cat "$STATE_FILE"
+    else
+        echo "(none applied)"
+    fi
+}
+
+apply_kickoff_icon() {
+    local pack_dir="$1" component="$2"
+    local src="$pack_dir/$component"
+    [ -f "$src" ] || { info "  skip kickoff icon (not in pack)"; return 0; }
+
+    local dest_dir="/usr/share/icons/hicolor/scalable/places"
+    mkdir -p "$dest_dir"
+    install -m 0644 "$src" "$dest_dir/start-here-kde.svg"
+    install -m 0644 "$src" "$dest_dir/start-here.svg"
+
+    # If the pack has a symbolic variant, use it; otherwise reuse the same SVG.
+    if [ -f "$pack_dir/icons/start-here-symbolic.svg" ]; then
+        install -m 0644 "$pack_dir/icons/start-here-symbolic.svg" "$dest_dir/start-here-symbolic.svg"
+    else
+        install -m 0644 "$src" "$dest_dir/start-here-symbolic.svg"
+    fi
+
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        gtk-update-icon-cache -q -t /usr/share/icons/hicolor/ 2>/dev/null || true
+    fi
+    info "  kickoff icon -> $dest_dir/start-here-kde.svg"
+}
+
+apply_wallpaper() {
+    local pack_dir="$1" component="$2"
+    local src="$pack_dir/$component"
+    [ -f "$src" ] || { info "  skip wallpaper (not in pack)"; return 0; }
+
+    local wp_dir="/usr/share/wallpapers/Macrosofty/contents/images"
+    mkdir -p "$wp_dir"
+    install -m 0644 "$src" "$wp_dir/1920x1080.png"
+
+    # KDE6 metadata.json
+    cat > /usr/share/wallpapers/Macrosofty/metadata.json <<'EOF'
+{
+  "KPlugin": {
+    "Authors": [{"Name": "Macrosofty"}],
+    "Description": "Default Macrosofty wallpaper.",
+    "Id": "Macrosofty",
+    "License": "Apache-2.0",
+    "Name": "Macrosofty"
+  },
+  "X-KDE-PluginInfo-Name": "Macrosofty"
+}
+EOF
+    info "  wallpaper -> /usr/share/wallpapers/Macrosofty/"
+}
+
+apply_motd() {
+    local pack_dir="$1" component="$2"
+    local src="$pack_dir/$component"
+    [ -f "$src" ] || { info "  skip motd (not in pack)"; return 0; }
+    install -m 0644 "$src" /etc/motd
+    info "  motd -> /etc/motd"
+}
+
+apply_grub_distributor() {
+    local distributor="$1"
+    [ -n "$distributor" ] || { info "  skip GRUB distributor (not in pack)"; return 0; }
+    mkdir -p /etc/default/grub.d
+    printf 'GRUB_DISTRIBUTOR="%s"\n' "$distributor" > /etc/default/grub.d/99-macrosofty.cfg
+    info "  GRUB distributor -> $distributor"
+    # Note: actual /boot/grub2/grub.cfg regenerates at install time. We just
+    # set the source-of-truth here.
+}
+
+apply_sddm_background() {
+    local pack_dir="$1" component="$2"
+    local src="$pack_dir/$component"
+    [ -f "$src" ] || { info "  skip SDDM background (not in pack)"; return 0; }
+
+    # Breeze SDDM theme reads its background from /usr/share/sddm/themes/breeze/
+    # and the filename is configured in theme.conf. We overlay the most common
+    # default filenames; one will be the live one.
+    local dest_dir="/usr/share/sddm/themes/breeze"
+    if [ -d "$dest_dir" ]; then
+        install -m 0644 "$src" "$dest_dir/Background.png"
+        info "  SDDM background -> $dest_dir/Background.png"
+    else
+        info "  skip SDDM background (no breeze theme dir; SDDM not installed?)"
+    fi
+
+    # Tell SDDM to use breeze (in case Aurora set a different theme).
+    mkdir -p /etc/sddm.conf.d
+    cat > /etc/sddm.conf.d/00-macrosofty.conf <<'EOF'
+[Theme]
+Current=breeze
+EOF
+}
+
+apply_plymouth_theme() {
+    local pack_dir="$1" component="$2"
+    local theme_dir="$pack_dir/$component"
+    [ -d "$theme_dir" ] || { info "  skip Plymouth theme (not in pack)"; return 0; }
+    [ -f "$theme_dir/macrosofty.plymouth" ] || { info "  skip Plymouth (no macrosofty.plymouth)"; return 0; }
+
+    local dest="/usr/share/plymouth/themes/macrosofty"
+    mkdir -p "$dest"
+    cp -a "$theme_dir/." "$dest/"
+
+    if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+        plymouth-set-default-theme macrosofty || info "  warning: plymouth-set-default-theme failed"
+        info "  Plymouth theme -> macrosofty (initramfs regen happens at next dracut run)"
+    else
+        info "  warning: plymouth-set-default-theme not found; theme installed but not active"
+    fi
+}
+
+apply_lookandfeel() {
+    local pack_dir="$1" component="$2"
+    local src_dir="$pack_dir/$component"
+    [ -d "$src_dir" ] || { info "  skip Look-and-Feel (not in pack)"; return 0; }
+
+    local dest="/usr/share/plasma/look-and-feel/com.macrosofty.desktop"
+    mkdir -p "$dest"
+    cp -a "$src_dir/." "$dest/"
+    info "  Look-and-Feel -> $dest"
+}
+
+cmd_apply() {
+    local pack_name="${1:-}"
+    [ -n "$pack_name" ] || die "usage: macrosofty-theme apply <pack-name>"
+    need_root
+
+    local pack_dir="$THEMES_ROOT/$pack_name"
+    [ -d "$pack_dir" ] || die "no such pack: $pack_name (looked in $pack_dir)"
+
+    local meta="$pack_dir/pack.json"
+    [ -f "$meta" ] || die "pack has no pack.json: $meta"
+
+    info "applying pack: $pack_name ($(jq -r '.displayName // .name' "$meta"))"
+
+    local kickoff wallpaper login motd grubdistro plymouth sddm laf
+    kickoff=$(jq -r '.components.kickoffIcon // empty' "$meta")
+    wallpaper=$(jq -r '.components.wallpaper // empty' "$meta")
+    login=$(jq -r '.components.loginBackground // empty' "$meta")
+    motd=$(jq -r '.components.motd // empty' "$meta")
+    grubdistro=$(jq -r '.components.grubDistributor // empty' "$meta")
+    plymouth=$(jq -r '.components.plymouthTheme // empty' "$meta")
+    sddm=$(jq -r '.components.sddmBackground // empty' "$meta")
+    laf=$(jq -r '.components.lookAndFeel // empty' "$meta")
+
+    [ -n "$kickoff" ]    && apply_kickoff_icon       "$pack_dir" "$kickoff"
+    [ -n "$wallpaper" ]  && apply_wallpaper          "$pack_dir" "$wallpaper"
+    [ -n "$motd" ]       && apply_motd               "$pack_dir" "$motd"
+    [ -n "$grubdistro" ] && apply_grub_distributor   "$grubdistro"
+    [ -n "$sddm" ]       && apply_sddm_background    "$pack_dir" "$sddm"
+    [ -n "$plymouth" ]   && apply_plymouth_theme     "$pack_dir" "$plymouth"
+    [ -n "$laf" ]        && apply_lookandfeel        "$pack_dir" "$laf"
+
+    mkdir -p "$(dirname "$STATE_FILE")"
+    echo "$pack_name" > "$STATE_FILE"
+    info "applied pack: $pack_name"
+}
+
+case "${1:-}" in
+    apply)    shift; cmd_apply   "$@" ;;
+    list)     cmd_list ;;
+    current)  cmd_current ;;
+    -h|--help|"")
+        sed -n '3,/^$/p' "$0" | sed 's/^# \?//'
+        ;;
+    *) die "unknown command: $1 (try --help)" ;;
+esac

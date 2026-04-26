@@ -22,37 +22,37 @@ echo "::group::Padkos build"
 # Aurora upstream does NOT ship any of: akonadi-server, kmail, kontact,
 # korganizer, kaddressbook, kalendar, kdepim, krita, kdenlive, digikam.
 # Earlier `dnf5 remove` calls for these were no-ops — zero whiteouts in
-# the resulting layer. Removed to stop pretending Padkos is structurally
-# lighter than Hearty when we're inheriting Aurora unchanged.
+# the resulting layer.
 #
 # Padkos's actual differentiation lives elsewhere: offline-first-boot
-# Firefox RPM (below), and the planned LibreOffice RPM (next change),
-# plus reduced firstboot Flatpak pressure.
-#
-# If we ever want to genuinely shrink the deployed-system size (not the
-# OCI image — see iso-size-analysis.md §3.3 for why), candidates that DO
-# exist in Aurora upstream are: Linuxbrew (~132 MiB), Noto CJK fonts
-# (~150 MiB), and the Tesseract OCR language packs except `eng` (~80 MiB).
-# Keep this commented for the next maintainer to find.
+# Firefox RPM (below) and reduced firstboot Flatpak pressure.
+
+# --- Strip Aurora-specific welcome popups -----------------------------------
+dnf5 -y remove plasma-welcome || true
 
 # --- Essential additions ----------------------------------------------------
 # Aurora ships Firefox as a Flatpak via firstboot, which depends on the
 # firstboot service firing AND the user having internet at first login.
 # For a "works on first boot, even offline" experience, we install the
-# Firefox RPM directly. Slight divergence from Aurora's pattern but
-# matches Padkos's promise: the laptop just works when you turn it on.
-dnf5 -y install firefox || true
+# Firefox RPM directly. Same logic for the offline-first-boot promise —
+# see docs/app-curation.md §4.4.
+#
+# `jq` is needed by the macrosofty-theme apply script below.
+dnf5 -y install firefox jq || true
 
 # --- Shared system files ----------------------------------------------------
-# Same pattern as the other editions.
+# Includes the theme pack assets at /usr/share/macrosofty/themes/default/
+# and the macrosofty-theme apply script at /usr/bin/macrosofty-theme.
 
 if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/dev/null)" ]; then
     cp -r /ctx/system_files/shared/. /
 fi
 
-if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -q -t /usr/share/icons/hicolor/ 2>/dev/null || true
-fi
+# --- Apply the default Macrosofty theme pack --------------------------------
+# Kickoff icon, wallpaper, MOTD, GRUB distributor, Plymouth theme, SDDM
+# background, Look-and-Feel. Re-runnable later by the user via
+# `sudo macrosofty-theme apply <pack>` once we ship more packs.
+macrosofty-theme apply default
 
 # --- Tidy the package metadata ----------------------------------------------
 dnf5 clean all

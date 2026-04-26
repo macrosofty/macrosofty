@@ -12,12 +12,19 @@ echo "::group::Braai build"
 # --- Identity ---------------------------------------------------------------
 /ctx/scripts/generate-os-release.sh braai "${MACROSOFTY_VERSION:-0.1.0-dev}"
 
+# --- Packages ---------------------------------------------------------------
+# Bazzite already does the gaming heavy lifting (Steam, Proton, gamescope,
+# MangoHud, controllers). We add only what's needed for our scripts.
+# Bazzite already strips plasma-welcome upstream so no removal needed here.
+dnf5 install -y \
+    jq
+
+# --- Shared system files ----------------------------------------------------
 if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/dev/null)" ]; then
     cp -r /ctx/system_files/shared/. /
 fi
 
-if command -v gtk-update-icon-cache >/dev/null 2>&1; then
-    gtk-update-icon-cache -q -t /usr/share/icons/hicolor/ 2>/dev/null || true
-fi
+# --- Apply the default Macrosofty theme pack --------------------------------
+macrosofty-theme apply default
 
 echo "::endgroup::"
