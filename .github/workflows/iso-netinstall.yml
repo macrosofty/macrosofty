@@ -1,0 +1,135 @@
+---
+name: Build edition netinstall ISOs
+on:
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: "Edition (or 'all')"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - hearty
+          - chunky
+          - padkos
+          - braai
+  workflow_run:
+    workflows: ["Build edition images"]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  netinstall:
+    name: Netinstall ${{ matrix.edition }}
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        edition:
+          - hearty
+          - chunky
+          - padkos
+          - braai
+
+    permissions:
+      contents: read
+
+    env:
+      EDITION: ${{ matrix.edition }}
+      SELECTED_EDITION: ${{ inputs.edition || 'all' }}
+      FEDORA_NETINST_URL: "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/iso/Fedora-Server-netinst-x86_64-43-1.4.iso"
+      FEDORA_NETINST_FILE: "Fedora-Server-netinst-x86_64-43-1.4.iso"
+
+    steps:
+      - name: Skip non-selected edition
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "$SELECTED_EDITION" != "all" ] && [ "$SELECTED_EDITION" != "$EDITION" ]; then
+              echo "Skipping $EDITION — only $SELECTED_EDITION requested."
+              echo "skip=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Checkout
+        if: env.skip != 'true'
+        uses: actions/checkout@v5
+
+      - name: Free disk space
+        if: env.skip != 'true'
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Cache Fedora netinst ISO
+        if: env.skip != 'true'
+        id: cache-fedora-iso
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.FEDORA_NETINST_FILE }}
+          key: fedora-netinst-${{ env.FEDORA_NETINST_FILE }}
+
+      - name: Download Fedora netinst ISO
+        if: env.skip != 'true' && steps.cache-fedora-iso.outputs.cache-hit != 'true'
+        run: |
+          curl -fL -o "$FEDORA_NETINST_FILE" "$FEDORA_NETINST_URL"
+          size=$(stat -c %s "$FEDORA_NETINST_FILE")
+          echo "Downloaded $size bytes."
+          if [ "$size" -lt 500000000 ]; then
+              echo "Fedora ISO download too small — likely 404 or mirror error." >&2
+              exit 1
+          fi
+
+      - name: Substitute edition into kickstart
+        if: env.skip != 'true'
+        run: |
+          sed "s|@@EDITION@@|${EDITION}|g" \
+              editions/netinstall/kickstart.in \
+              > "macrosofty-${EDITION}.ks"
+          echo "::group::Generated kickstart"
+          cat "macrosofty-${EDITION}.ks"
+          echo "::endgroup::"
+
+      - name: Build netinstall ISO with mkksiso
+        if: env.skip != 'true'
+        run: |
+          docker run --rm --privileged \
+              -v "$PWD:/work" \
+              -w /work \
+              -e EDITION="$EDITION" \
+              -e FEDORA_NETINST_FILE="$FEDORA_NETINST_FILE" \
+              registry.fedoraproject.org/fedora:43 \
+              bash -c '
+                set -euxo pipefail
+                dnf install -y lorax
+                mkksiso \
+                    --ks "macrosofty-${EDITION}.ks" \
+                    "${FEDORA_NETINST_FILE}" \
+                    "macrosofty-${EDITION}-netinstall-amd64.iso"
+              '
+
+      - name: Stage ISO + checksum for upload
+        if: env.skip != 'true'
+        id: stage
+        run: |
+          mkdir -p upload
+          OUT="macrosofty-${EDITION}-netinstall-amd64.iso"
+          DATED="macrosofty-${EDITION}-netinstall-$(date -u +%Y%m%d).iso"
+          mv "${OUT}" "upload/${DATED}"
+          ( cd upload && sha256sum "${DATED}" > "${DATED}.sha256" )
+          ls -lh upload/
+          echo "name=$(basename ${DATED} .iso)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload netinstall ISO artefact
+        if: env.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.stage.outputs.name }}
+          path: upload/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

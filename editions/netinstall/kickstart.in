@@ -1,0 +1,45 @@
+# Macrosofty netinstall kickstart for @@EDITION@@.
+#
+# This file is the source of truth for what a Macrosofty netinstall does.
+# The CI workflow at .github/workflows/iso-netinstall.yml takes this file,
+# substitutes @@EDITION@@ with the edition name, and uses mkksiso to embed
+# the result into Fedora 43's standard netinstall ISO. The output is a
+# Macrosofty-branded netinstall ISO that pulls our OCI image from GHCR
+# at install time.
+#
+# Anaconda screens not specified here get presented to the user
+# interactively in the graphical installer — partitioning, user creation,
+# network setup, root password. That's the point of a netinstall: the
+# user keeps control of those choices, and only the OS payload is
+# pre-configured.
+
+# --- Run mode --------------------------------------------------------------
+# `graphical` = use Anaconda's GTK graphical installer. The user sees
+# the standard Fedora installer screens with our payload pre-wired.
+graphical
+
+# --- Locale defaults (user can override interactively) ---------------------
+keyboard --xlayouts='us'
+lang en_US.UTF-8
+timezone Africa/Johannesburg --utc
+
+# --- Payload --------------------------------------------------------------
+# This is the magic line. Anaconda fetches the OCI image from GHCR at
+# install time and `bootc install`s it onto the partitioned disk.
+# --transport=registry means "treat the URL as a container registry ref"
+# (vs. file:// or oci-archive). --no-signature-verification because we
+# haven't wired the cosign signature check into Anaconda's payload yet —
+# v0.2 work, alongside the netinstall hardening.
+ostreecontainer \
+    --url=ghcr.io/macrosofty/@@EDITION@@:latest \
+    --transport=registry \
+    --no-signature-verification
+
+# --- Post-install ---------------------------------------------------------
+# Reboot when finished so the user lands on the freshly installed system
+# rather than the installer media.
+reboot
+
+# Run the firstboot wizard on first login (KDE Plasma's, plus our
+# Macrosofty firstboot Brewfile that pulls the edition's Flatpaks).
+firstboot --enable
