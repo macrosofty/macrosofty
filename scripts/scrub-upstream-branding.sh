@@ -1,95 +1,118 @@
 #!/usr/bin/env bash
 #
-# scrub-upstream-branding.sh — rewrite "Aurora" → "Macrosofty" in
-# user-facing strings of the inherited image. Run from each edition's
-# build.sh after the theme pack apply. Functional fields (Exec=, file
-# paths, package names) are left alone so we don't break what we
-# inherited; only display strings are rewritten.
+# scrub-upstream-branding.sh — rewrite upstream brand strings (Aurora,
+# Bazzite, …) to our brand in the user-facing strings of the inherited
+# image. Run from each edition's build.sh after the theme pack apply.
 #
-# Idempotent. Safe to re-run.
+# Single source of truth for what to scrub: config/identity.env.
+# Edit that file (UPSTREAM_BRANDS, UPSTREAM_URL_SUBS, BRAND_NAME) to
+# change what gets rewritten — this script reads from there.
+#
+# Functional fields (Exec=, file paths, package names) are left alone
+# so we don't break what we inherited; only display strings are
+# rewritten. Idempotent. Safe to re-run.
 
 set -euo pipefail
 
+# --- Source identity config ------------------------------------------------
+if [ -r /ctx/config/identity.env ]; then
+    # shellcheck source=/dev/null
+    . /ctx/config/identity.env
+elif [ -r "$(dirname "$0")/../config/identity.env" ]; then
+    # shellcheck source=/dev/null
+    . "$(dirname "$0")/../config/identity.env"
+else
+    echo "scrub-upstream-branding.sh: missing config/identity.env" >&2
+    exit 1
+fi
+
 echo "::group::Scrub upstream branding"
+echo "Brand: ${BRAND_NAME} (lowercase: ${BRAND_NAME_LOWER})"
+echo "Upstream brands to scrub: ${UPSTREAM_BRANDS}"
+
+# --- Build the sed program from identity.env ------------------------------
+# Each upstream brand becomes two replacements (capitalized + lowercase).
+# Each URL substitution becomes one. The sed program is reused for both
+# .desktop entries (Name/Comment/etc. lines only) and shell-greeting
+# files (whole file).
+build_brand_sed_lines() {
+    for brand in $UPSTREAM_BRANDS; do
+        local lower; lower=$(echo "$brand" | tr '[:upper:]' '[:lower:]')
+        printf 's|%s|%s|g\n' "$brand" "$BRAND_NAME"
+        printf 's|%s|%s|g\n' "$lower" "$BRAND_NAME_LOWER"
+    done
+}
+
+build_url_sed_lines() {
+    while IFS='|' read -r from to; do
+        [ -n "$from" ] && [ -n "$to" ] || continue
+        printf 's|%s|%s|g\n' "$from" "$to"
+    done <<< "$UPSTREAM_URL_SUBS"
+}
+
+# Pre-compute the regex alternation for the case-insensitive grep, so
+# we only run sed against files that contain at least one upstream
+# brand reference. Avoids touching files we don't need to.
+brand_regex=$(echo "$UPSTREAM_BRANDS" | tr ' ' '|')
 
 # --- .desktop entries (system menu items + autostart) ----------------------
-# Targets: Name, GenericName, Comment, Keywords (and their locale variants).
-# We replace "Aurora"/"Bazzite" with "Macrosofty" globally on those lines
-# only — Exec=, Icon=, Categories=, etc. stay untouched. Covers both the
-# system menu (/usr/share/applications) and the autostart directory
-# (/etc/xdg/autostart) where login-launched helpers live.
+# Targets: Name, GenericName, Comment, Keywords (and locale variants).
+# Exec=, Icon=, Categories= stay untouched so functionality is preserved.
+DESKTOP_SED_PROGRAM=$(
+    {
+        printf '/^\\(Name\\|Comment\\|GenericName\\|Keywords\\)\\(\\[[a-zA-Z_@]*\\]\\)\\?=/ {\n'
+        build_brand_sed_lines
+        printf '}\n'
+    }
+)
+
 while IFS= read -r -d '' f; do
     [ -f "$f" ] || continue
-    if grep -q -iE 'aurora|bazzite' "$f" 2>/dev/null; then
-        sed -i '/^\(Name\|Comment\|GenericName\|Keywords\)\(\[[a-zA-Z_@]*\]\)\?=/ {
-            s/Aurora/Macrosofty/g
-            s/aurora/macrosofty/g
-            s/Bazzite/Macrosofty/g
-            s/bazzite/macrosofty/g
-        }' "$f"
+    if grep -q -iE "$brand_regex" "$f" 2>/dev/null; then
+        sed -i "$DESKTOP_SED_PROGRAM" "$f"
     fi
 done < <(find /usr/share/applications /etc/xdg/autostart -type f -name '*.desktop' -print0 2>/dev/null)
 
-# Update the menu database so KDE / GNOME pick up the rewrites without
-# needing a re-login. Best-effort.
 if command -v update-desktop-database >/dev/null 2>&1; then
     update-desktop-database -q /usr/share/applications/ 2>/dev/null || true
 fi
 
 # --- /etc/*-release files --------------------------------------------------
-# Aurora may ship /etc/aurora-release or similar. Rewrite "Aurora" to
-# "Macrosofty" in these. Skip the ones we own (os-release, system-release,
-# redhat-release — already populated by scripts/generate-os-release.sh).
+# Skip the ones we own (os-release, system-release, redhat-release —
+# populated by scripts/generate-os-release.sh from identity.env).
+RELEASE_SED_PROGRAM=$(build_brand_sed_lines)
+
 for f in /etc/*-release; do
     [ -f "$f" ] || continue
     base=$(basename "$f")
     case "$base" in
         os-release|system-release|redhat-release) continue ;;
     esac
-    if grep -q -iE 'aurora|bazzite' "$f" 2>/dev/null; then
-        sed -i 's/Aurora/Macrosofty/g; s/aurora/macrosofty/g; s/Bazzite/Macrosofty/g; s/bazzite/macrosofty/g' "$f"
+    if grep -q -iE "$brand_regex" "$f" 2>/dev/null; then
+        sed -i "$RELEASE_SED_PROGRAM" "$f"
     fi
 done
 
 # --- Shell-login greeting scripts ------------------------------------------
-# Aurora ships /etc/profile.d/*.sh scripts that print "Welcome to Aurora"
-# plus links to their docs / issue tracker on every interactive shell
-# login. Same pattern Bazzite uses. Rewrite both the brand strings AND
-# the URLs so the welcome stays useful but points at our channels. Also
-# covers /etc/motd.d and /etc/update-motd.d (Debian-derived but some
-# tools look there) for completeness.
-scrub_aurora_strings() {
-    local f="$1"
-    sed -i '
-        s|docs\.getaurora\.dev|macrosofty.org|g
-        s|getaurora\.dev|macrosofty.org|g
-        s|docs\.bazzite\.gg|macrosofty.org|g
-        s|bazzite\.gg|macrosofty.org|g
-        s|github\.com/ublue-os/aurora|github.com/macrosofty/macrosofty|g
-        s|github\.com/ublue-os/bazzite|github.com/macrosofty/macrosofty|g
-        s/Aurora/Macrosofty/g
-        s/aurora/macrosofty/g
-        s/Bazzite/Macrosofty/g
-        s/bazzite/macrosofty/g
-    ' "$f"
-}
+# Aurora / Bazzite ship /etc/profile.d/*.sh that print "Welcome to <brand>"
+# plus links to their docs / issue tracker on every shell login. Rewrite
+# both brand strings AND URLs so the welcome stays useful but points at
+# our channels.
+GREETING_SED_PROGRAM=$(
+    {
+        # URL substitutions first, so they don't get partially-rewritten
+        # by the brand-string pass.
+        build_url_sed_lines
+        build_brand_sed_lines
+    }
+)
 
 while IFS= read -r -d '' f; do
     [ -f "$f" ] || continue
-    if grep -q -iE 'aurora|bazzite' "$f" 2>/dev/null; then
-        scrub_aurora_strings "$f"
+    if grep -q -iE "$brand_regex" "$f" 2>/dev/null; then
+        sed -i "$GREETING_SED_PROGRAM" "$f"
     fi
 done < <(find /etc/profile.d /etc/motd.d /etc/update-motd.d /etc/bashrc.d /etc/zsh \
             -type f \( -name '*.sh' -o -name 'bashrc' -o -name 'zshrc' \) -print0 2>/dev/null)
-
-# --- Other user-visible upstream strings -----------------------------------
-# Aurora's plasma-welcome / first-run app branding lives in a few files.
-# This is best-effort: we don't yet know the exact set of paths upstream
-# uses, so we keep this list short and add to it as the next QEMU test
-# surfaces things.
-#
-# Examples we'll add to once we observe them in a build:
-#   /usr/share/plasma/plasmoids/.../Name fields
-#   /etc/xdg/autostart/aurora-*.desktop (handled by .desktop loop above)
 
 echo "::endgroup::"

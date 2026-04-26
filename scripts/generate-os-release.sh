@@ -19,6 +19,20 @@ set -euo pipefail
 EDITION="${1:?usage: $0 <edition> [version]}"
 VERSION="${2:-0.1.0-dev}"
 
+# Source the brand identity (single source of truth for BRAND_NAME, URLs,
+# default hostname, etc. — see config/identity.env). Look in /ctx/config/
+# during image build, falling back to relative path for local testing.
+if [ -r /ctx/config/identity.env ]; then
+    # shellcheck source=/dev/null
+    . /ctx/config/identity.env
+elif [ -r "$(dirname "$0")/../config/identity.env" ]; then
+    # shellcheck source=/dev/null
+    . "$(dirname "$0")/../config/identity.env"
+else
+    echo "generate-os-release.sh: missing config/identity.env" >&2
+    exit 1
+fi
+
 case "$EDITION" in
     hearty)  PRETTY="Hearty";  RGB="198;107;61"  ;;  # saffron orange
     chunky)  PRETTY="Chunky";  RGB="176;70;56"   ;;  # roasted red
@@ -36,47 +50,45 @@ esac
 # through every user-visible field instead. Aurora and Bazzite get away
 # with their own ID because they ship distro defs upstream; v0.2 work.
 cat > /usr/lib/os-release <<EOF
-NAME="Macrosofty ${PRETTY}"
-PRETTY_NAME="Macrosofty ${PRETTY}"
+NAME="${BRAND_NAME} ${PRETTY}"
+PRETTY_NAME="${BRAND_NAME} ${PRETTY}"
 VERSION="${VERSION} (${PRETTY})"
 VERSION_ID=43
 ID=fedora
 ID_LIKE=fedora
-VARIANT="Macrosofty ${PRETTY}"
+VARIANT="${BRAND_NAME} ${PRETTY}"
 VARIANT_ID=${EDITION}
 ANSI_COLOR="0;38;2;${RGB}"
-LOGO=macrosofty
-HOME_URL="https://macrosofty.org"
-DOCUMENTATION_URL="https://github.com/macrosofty/macrosofty"
-SUPPORT_URL="https://github.com/macrosofty/macrosofty/discussions"
-BUG_REPORT_URL="https://github.com/macrosofty/macrosofty/issues"
-DEFAULT_HOSTNAME=macrosofty
+LOGO=${BRAND_NAME_LOWER}
+HOME_URL="${BRAND_HOMEPAGE_URL}"
+DOCUMENTATION_URL="${BRAND_DOCS_URL}"
+SUPPORT_URL="${BRAND_SUPPORT_URL}"
+BUG_REPORT_URL="${BRAND_ISSUES_URL}"
+DEFAULT_HOSTNAME=${BRAND_DEFAULT_HOSTNAME}
 IMAGE_ID=${EDITION}
 IMAGE_VERSION="${VERSION}"
 EOF
 
 # /etc/system-release is what Anaconda reads for the boot-menu / install
-# screen "<distro> <version>" line. Mirroring NAME so the installer shows
-# "Macrosofty <Edition> 43" instead of just "Macrosofty 43".
-echo "Macrosofty ${PRETTY} 43" > /etc/system-release
+# screen "<distro> <version>" line.
+echo "${BRAND_NAME} ${PRETTY} 43" > /etc/system-release
 ln -sf system-release /etc/redhat-release 2>/dev/null || true
 
 # /etc/hostname — Aurora ships this set to "aurora", which means a fresh
 # Padkos install lands at "user@aurora" in the terminal until the user
-# picks something else. Override to "macrosofty" so the default matches
-# the brand. The user can change it in Settings → System → About at any
-# time, or pick a hostname interactively in Anaconda during install.
-echo "macrosofty" > /etc/hostname
+# picks something else. Override so the default matches the brand. User
+# can change in Settings → System → About or interactively in Anaconda.
+echo "${BRAND_DEFAULT_HOSTNAME}" > /etc/hostname
 
 # /etc/os-release is conventionally a symlink to /usr/lib/os-release on
-# systemd systems. Force the symlink in case Aurora ships a real file.
+# systemd systems. Force the symlink in case the upstream ships a real file.
 ln -sf ../usr/lib/os-release /etc/os-release
 
 # TTY banner. \r is kernel release; \l is the tty.
 cat > /etc/issue <<EOF
-Macrosofty ${PRETTY} \\r (\\l)
+${BRAND_NAME} ${PRETTY} \\r (\\l)
 
 EOF
 cp /etc/issue /etc/issue.net
 
-echo "os-release written: Macrosofty ${PRETTY} ${VERSION}"
+echo "os-release written: ${BRAND_NAME} ${PRETTY} ${VERSION}"
