@@ -5,6 +5,7 @@ FROM scratch AS ctx
 COPY editions/chunky /edition
 COPY system_files /system_files
 COPY scripts /scripts
+COPY config /config
 
 FROM ghcr.io/ublue-os/aurora-dx:stable
 
