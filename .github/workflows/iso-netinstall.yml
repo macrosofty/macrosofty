@@ -97,6 +97,23 @@ jobs:
           cat "macrosofty-${EDITION}.ks"
           echo "::endgroup::"
 
+      - name: Pre-pull Fedora image (with retry)
+        if: env.skip != 'true'
+        run: |
+          # registry.fedoraproject.org occasionally resets connections under
+          # parallel-pull load (all 4 edition jobs hit it at once). Retry up
+          # to 5 times with linear backoff before letting the build fail.
+          for attempt in 1 2 3 4 5; do
+              if docker pull registry.fedoraproject.org/fedora:43; then
+                  echo "fedora:43 pulled on attempt $attempt"
+                  exit 0
+              fi
+              echo "pull attempt $attempt failed; sleeping $((attempt * 10))s"
+              sleep $((attempt * 10))
+          done
+          echo "fedora:43 pull failed after 5 attempts" >&2
+          exit 1
+
       - name: Build netinstall ISO with mkksiso
         if: env.skip != 'true'
         run: |
