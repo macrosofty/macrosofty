@@ -26,6 +26,14 @@ Two flavours, distinguished by where they run:
 |---|---|
 | `local/verify-images.sh` | Pull each edition image from `ghcr.io/macrosofty/<edition>:<tag>` and verify its cosign keyless signature in one shot. Defaults to all four editions and `:latest`; accepts edition names + `--tag=...` + `--no-pull` (skip pull, verify already-pulled images). Exit 0 = everything verified; exit 1 = at least one failure. Prints the manifest digest and originating commit for each pass. Use after a release, when troubleshooting GHCR auth, or to confirm a registry artefact really came from our workflow. |
 
+## Org tooling
+
+| Script | What it does |
+|---|---|
+| `new-project.sh` | Scaffold a new Macrosofty satellite project (apps, helpers, applets, libraries — anything that orbits the OS but isn't part of the ISO build). Renders `templates/*.tmpl` into `/var/mnt/code/<slug>/` with voice-inheriting `CLAUDE.md`, README/ROADMAP/NEXT_SESSION/CONTRIBUTING stubs, Apache-2.0 LICENSE, `.gitignore`, kickoff `SESSION_NOTES`. Initialises git + first commit, then creates a **private** repo at `github.com/macrosofty/<slug>` and pushes. Prefers `gh` if installed and authenticated; otherwise falls back to the GitHub REST API via curl using `$GITHUB_TOKEN` from `~/.config/macrosofty/load-tokens.sh`. Usage: `scripts/new-project.sh <slug> "<Title>" "<one-line description>"`. Flags: `--public` (override default-private), `--no-remote` (skip GitHub repo creation entirely), `--parent <dir>` (default `/var/mnt/code`). |
+
+The `templates/` folder holds the `*.tmpl` files used by `new-project.sh`. Edit those when the house style for satellite projects changes — every new project picks up the change on next scaffold. Existing scaffolded projects are not retroactively updated; that's intentional (each project owns its own copy after generation).
+
 ## Conventions
 
 - Bash. `set -euo pipefail` at the top. Idempotent where reasonable — re-running a script should not break the image.
