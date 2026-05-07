@@ -30,10 +30,11 @@ timezone Africa/Johannesburg --utc
 # (vs. file:// or oci-archive). --no-signature-verification because we
 # haven't wired the cosign signature check into Anaconda's payload yet —
 # v0.2 work, alongside the netinstall hardening.
-ostreecontainer \
-    --url=ghcr.io/macrosofty/@@EDITION@@:latest \
-    --transport=registry \
-    --no-signature-verification
+#
+# Single line on purpose: pykickstart's parser does NOT support backslash
+# line continuation. Splitting this directive across lines makes Anaconda
+# fail with "the following arguments are required: --url".
+ostreecontainer --url=ghcr.io/macrosofty/@@EDITION@@:latest --transport=registry --no-signature-verification
 
 # --- Post-install ---------------------------------------------------------
 # Reboot when finished so the user lands on the freshly installed system
