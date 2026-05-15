@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Macrosofty Welcome
+Comment=One-shot first-login greeting
+Exec=/usr/libexec/macrosofty-welcome
+Icon=macrosofty
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-after=panel
+NoDisplay=false
+Terminal=false
+OnlyShowIn=KDE;

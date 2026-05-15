@@ -1,0 +1,13 @@
+{
+  "name": "tjopper",
+  "displayName": "Macrosofty Tjopper",
+  "description": "Tjopper says hi. A wallpaper pack starring our friendly mascot — the rest of the system stays as-is.",
+  "version": "0.1.0",
+  "author": "Macrosofty",
+  "license": "Apache-2.0",
+  "components": {
+    "wallpaper": "wallpaper-1920x1080.png",
+    "loginBackground": "login-bg.png",
+    "sddmBackground": "login-bg.png"
+  }
+}

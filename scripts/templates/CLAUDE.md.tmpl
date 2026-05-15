@@ -1,0 +1,140 @@
+# CLAUDE.md — {{TITLE}}
+
+## What this project is
+
+{{DESCRIPTION}}
+
+{{TITLE}} is a **satellite project of Macrosofty** (`/var/mnt/code/macrosofty/`)
+— same founder, same audience, same voice, separate repo. It can ship
+inside a Macrosofty edition or be used standalone on any Linux family.
+
+> Replace this paragraph with one or two sentences explaining what the
+> project actually does, who it's for, and what it shells out to (if
+> anything). Keep it short and honest.
+
+**Status:** pre-scaffold (just generated). Replace this line as the
+project takes shape.
+
+## The voice (inherited from Macrosofty)
+
+This project shares Macrosofty's house style. The non-negotiables:
+
+- **Never name the rival.** No "Microsoft", no "Windows" in user-facing
+  text. Use the door metaphor — *"the one with the windows,"* *"the
+  door company that only sells windows,"* or just elide. The joke
+  works because we never spell it out.
+- **Peace, not war.** We're an alternative, not a protest. If
+  someone's current OS works for them, great. We're not here to
+  convert, shame, or lecture.
+- **Dry, friendly, never mean.** Tooltips and copy lean Linux Mint
+  warmth + Steam Deck confidence + a knowing wink. Braai-side, not
+  boardroom.
+- **SA flavour sparingly.** *Lekker*, *howzit*, *bru*, *boet*, *braai*
+  appear once per section at most. Flavour, not decoration.
+- **Never explain the joke.** "Macrosofty" parodies the rival; the
+  door metaphor riffs on windows. Both work because readers spot them
+  unassisted. Don't add a wink ("…get it?").
+- **Honest copy.** Short, punchy, no marketing prose. If a sentence
+  doesn't earn its place, delete it.
+
+When in doubt about tone, read `data/bundles.yaml` and
+`data/personas.yaml` in the AppHelperThingy repo
+(`/var/mnt/code/AppHelperThingy/`) — those `why` and `voice` fields
+are the canonical voice samples for the family.
+
+## Core principles
+
+1. **Local-first, period.** No telemetry, no accounts, no cloud sync,
+   no analytics. Same load-bearing promise as Macrosofty.
+2. **Inherit upstream tools, don't reinvent.** First question on any
+   feature: "what does Universal Blue / Fedora / KDE / a standard
+   Linux tool already do, and should we just use that?"
+3. **Best-effort with honest no-ops.** Better to silently no-op on a
+   missing dependency than to lie about success.
+4. **Small surface area.** Ship one thing well rather than five things
+   poorly. Resist scope creep.
+5. **Apache-2.0 throughout.** Matches Macrosofty + Universal Blue
+   lineage.
+
+> Add project-specific principles below as they emerge. Examples from
+> sibling projects: "same-origin design, no CORS" (AppHelperThingy);
+> "atomic first, never compromise the doesn't-break property"
+> (Macrosofty).
+
+## Repository layout
+
+```
+{{SLUG}}/
+├── README.md                       # public-facing 1-pager
+├── CLAUDE.md                       # this file
+├── ROADMAP.md                      # what's done, what's next
+├── NEXT_SESSION.md                 # paste-ready kickoff prompt
+├── CONTRIBUTING.md                 # how to contribute
+├── LICENSE                         # Apache-2.0
+├── SESSION_NOTES_<YYYY-MM-DD>.md   # newest first
+└── ...                             # source tree (fill in as it grows)
+```
+
+## What you (Claude) should and shouldn't do in this repo
+
+### Should
+- **Match the Macrosofty voice** in every new piece of user-facing
+  text. Door metaphor, peace-not-war, no rival name, dry and friendly.
+- **Update `ROADMAP.md` in the same commit** as the feature it
+  closes. Move the line, don't just delete it.
+- **Update `README.md`** when the surface area changes.
+- **Push back on scope creep.** If a proposal needs a custom upstream
+  fork, ask whether upstream solves it; ask whether this is the fight
+  worth picking.
+- **Default to short, punchy, honest copy** in user-facing text. No
+  corporate voice, no filler.
+
+### Shouldn't
+- Don't add telemetry, accounts, or cloud sync. Local-first is
+  load-bearing across the whole Macrosofty family.
+- Don't write corporate-speak or pseudo-marketing prose. If it sounds
+  like an RFP response, it's wrong.
+- Don't make the door-vs-window joke explicit by saying "this is a
+  joke about Microsoft." The joke works *because* it's never spelled
+  out.
+- Don't commit without explicit instruction (same as other Macrosofty
+  projects).
+
+## Audience
+
+Same as Macrosofty:
+1. The Windows-fatigued person who'll give Linux 15 minutes.
+2. The relative-supporter setting up a non-technical family member.
+3. The hardware recycler with an old laptop.
+4. The gamer curious about leaving Windows telemetry behind.
+
+We are **not** optimising for the Arch user, the NixOS power-user, or
+the minimalist who wants `./configure && make`. They're not our
+customer, and that's fine.
+
+## Session notes
+
+Each working session ends with a `SESSION_NOTES_<YYYY-MM-DD>.md` at
+the repo root, written by the `/wrap-up` skill. They capture what was
+done and *why*, the technical decisions worth remembering, and the
+open punch list for next time. Newest first:
+
+- [`SESSION_NOTES_{{TODAY}}.md`](./SESSION_NOTES_{{TODAY}}.md) — project scaffolded from the Macrosofty template; voice + repo shell in place; nothing built yet.
+
+Future `/wrap-up` runs append a new bullet to the top of this list —
+don't skip the CLAUDE.md update step.
+
+## Related context
+
+- **Parent project: Macrosofty** at `/var/mnt/code/macrosofty/`. The
+  Linux distribution this project orbits. Read `macrosofty/CLAUDE.md`
+  for the founding principles in detail.
+- **Sibling project: AppHelperThingy** at `/var/mnt/code/AppHelperThingy/`
+  is the reference implementation for "what a Macrosofty satellite
+  app looks like" — FastAPI + single-file SPA, per-user installer,
+  `app/` package + routers, YAML data, voice in tooltips. Worth
+  skimming before deciding tech stack.
+- The user runs **Bazzite (VM 105 on pve1)** as his daily driver, so
+  this project is dogfooded on a Fedora-atomic + KDE host.
+- Founder is **South African** — hence the *lekker / braai / Mzansi*
+  touches in copy. Earned, not cosplay; sparing, not sprinkled.

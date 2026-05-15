@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <title>Tjopper — oops (something went wrong)</title>
+  <path d="M 90 320 V 200 A 110 110 0 0 1 310 200 V 320"
+        fill="none" stroke="#E89A2B" stroke-width="70"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="rotate(2.5 200 320) translate(200 320) scale(1.30) translate(-200 -320)">
+    <path d="M 153 320 Q 145 320 145 312 L 145 215 Q 145 155 200 155 Q 255 155 255 215 L 255 312 Q 255 320 247 320 Z"
+          fill="#F4E9D5"/>
+    <!-- bigger blushy cheeks (embarrassment) -->
+    <circle cx="168" cy="246" r="13" fill="#D87767" fill-opacity="0.6"/>
+    <circle cx="232" cy="246" r="13" fill="#D87767" fill-opacity="0.6"/>
+    <!-- wide surprised eyes (oval) -->
+    <ellipse cx="184" cy="216" rx="11" ry="14" fill="#222222"/>
+    <ellipse cx="216" cy="216" rx="11" ry="14" fill="#222222"/>
+    <!-- small "o" mouth -->
+    <ellipse cx="200" cy="278" rx="9" ry="11"
+             fill="none" stroke="#222222" stroke-width="6"/>
+  </g>
+</svg>

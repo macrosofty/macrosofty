@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#
+# Macrosofty firstboot welcome — runs once on a user's first KDE login,
+# then deletes its own autostart entry and writes a guard file.
+#
+# Triggered by /etc/skel/.config/autostart/macrosofty-welcome.desktop,
+# which gets seeded into ~/.config/autostart/ when Anaconda creates the
+# initial user.
+#
+# Voice rules: see CLAUDE.md (door metaphor, no naming the rival, SA
+# flavour sparingly). One "howzit" per dialog is the limit.
+
+set -euo pipefail
+
+GUARD="${XDG_CONFIG_HOME:-$HOME/.config}/macrosofty/welcome-shown"
+AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/macrosofty-welcome.desktop"
+TJOPPER="/usr/share/macrosofty/tjopper/tjopper-wave.svg"
+
+[ -f "$GUARD" ] && exit 0
+
+mkdir -p "$(dirname "$GUARD")"
+
+WELCOME_TEXT="Howzit. You're through the door — the house is yours.
+
+The system is opinionated. The desktop is yours: wallpaper, palette, fonts, cursor — all in System Settings.
+
+No accounts. No nags. Free for everyone, forever."
+
+# Open the bundled help app if it's there; otherwise the website.
+# Subshell + & detaches the child so this script can exit cleanly.
+open_help() {
+    if command -v apphelperthingy >/dev/null 2>&1; then
+        ( apphelperthingy >/dev/null 2>&1 & )
+    elif command -v xdg-open >/dev/null 2>&1; then
+        ( xdg-open "https://macrosofty.org" >/dev/null 2>&1 & )
+    fi
+}
+
+if command -v yad >/dev/null 2>&1; then
+    # yad return codes: 0 = "Got it", 1 = "Open Help",
+    # 252 = window closed via Escape / X (treat as Got it).
+    EXIT_CODE=0
+    yad \
+        --title="Welcome to Macrosofty" \
+        --window-icon="macrosofty" \
+        --image="$TJOPPER" \
+        --image-on-top \
+        --width=540 \
+        --text="$WELCOME_TEXT" \
+        --button="Open Help!help-browser:1" \
+        --button="Got it:0" \
+        || EXIT_CODE=$?
+
+    if [ "$EXIT_CODE" -eq 1 ]; then
+        open_help
+    fi
+
+elif command -v kdialog >/dev/null 2>&1; then
+    # Fallback path: kdialog can't embed an image inline, so we use --yesno
+    # to surface the same Open Help / Got it choice without the visual.
+    if kdialog \
+        --title "Welcome to Macrosofty" \
+        --yes-label "Open Help" \
+        --no-label "Got it" \
+        --yesno "$WELCOME_TEXT"; then
+        open_help
+    fi
+fi
+
+touch "$GUARD"
+rm -f "$AUTOSTART"

@@ -1,0 +1,49 @@
+# Next session — paste this prompt
+
+Save this file. When you start the next session in
+`/var/mnt/code/{{SLUG}}/`, paste the prompt below into Claude.
+
+---
+
+## Ready-to-paste prompt
+
+```
+We're picking up {{TITLE}} at /var/mnt/code/{{SLUG}}/.
+
+Catch up by reading these in order: CLAUDE.md (auto-loads), then
+README.md and ROADMAP.md. The project was scaffolded from the
+Macrosofty template on {{TODAY}} and nothing's been built yet —
+the first session needs to (1) decide tech stack, (2) write Tier 1
+into ROADMAP.md, (3) start on the first feature.
+
+Reference the sibling project AppHelperThingy at
+/var/mnt/code/AppHelperThingy/ for what a Macrosofty satellite app
+looks like end-to-end (FastAPI + single-file SPA + per-user
+installer + app/ package + YAML data + voice in tooltips). Don't
+copy it blindly — only borrow what fits this project.
+
+Voice: dry, friendly, never mean. Door metaphor over naming the
+rival. SA flavour sparingly. CLAUDE.md has the full rules.
+
+Confirm scope with me before starting; then go through Tier 1 in
+order.
+```
+
+---
+
+## Why this prompt
+
+- It points at the right files first so Claude reads the project
+  state rather than guessing.
+- It names the sibling project (AppHelperThingy) as the reference
+  pattern without forcing the same tech stack.
+- It carries the voice rules forward.
+- It ends with "confirm scope before starting" so the next session
+  pauses to align rather than diving in.
+
+## Update this file
+
+Replace this template with a real handoff after the first real
+session. The pattern: kickoff prompt at the top, file map in the
+middle, "non-obvious facts to remember" at the bottom. AppHelperThingy's
+`NEXT_SESSION.md` is the reference.

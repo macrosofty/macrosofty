@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=System Health
+GenericName=System Health
+Comment=See how your computer is doing.
+Exec=apphelperthingy --page=health
+Icon=apphelperthingy
+Terminal=false
+StartupNotify=true
+Categories=System;Settings;Monitor;
+Keywords=System;Health;Status;Diagnostics;Disk;Memory;Updates;

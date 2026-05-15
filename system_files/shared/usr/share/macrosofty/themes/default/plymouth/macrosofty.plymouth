@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Macrosofty
+Description=Macrosofty boot splash — saffron arch on dark warm-charcoal
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/macrosofty
+ScriptFile=/usr/share/plymouth/themes/macrosofty/macrosofty.script

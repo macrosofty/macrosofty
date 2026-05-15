@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Help
+GenericName=Help
+Comment=Find your way around Macrosofty.
+Exec=apphelperthingy %u
+Icon=apphelperthingy
+Terminal=false
+StartupNotify=true
+Categories=Documentation;Education;Utility;
+Keywords=Help;Documentation;Manual;Guide;Tutorial;Macrosofty;

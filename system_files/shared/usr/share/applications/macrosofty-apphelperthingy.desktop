@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=AppHelperThingy
+GenericName=AppHelperThingy
+Comment=The whole AppHelperThingy — help, app catalogue, and system health in one place.
+Exec=apphelperthingy
+Icon=apphelperthingy
+Terminal=false
+StartupNotify=true
+Categories=System;Utility;
+Keywords=AppHelperThingy;AHT;Help;Apps;Catalogue;Health;Macrosofty;

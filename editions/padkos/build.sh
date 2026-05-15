@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#
+# Padkos — older hardware + offline-first edition.
+#
+# Strategy: start from Aurora (same base as Hearty) and pre-install the
+# tools a user needs on day one — browser, office — as RPMs rather than
+# Aurora's first-boot Flatpaks. The result: a desktop that works the
+# moment the screen lights up, even before WiFi shows up. The trade-off
+# is image size (~+800 MB over Aurora); runtime memory and CPU floor are
+# unchanged, so old hardware still runs fine.
+#
+# Conservative on purpose. Removing things risks breaking the desktop;
+# the doesn't-break property is load-bearing.
+
+set -euo pipefail
+
+echo "::group::Padkos build"
+
+# --- Identity ---------------------------------------------------------------
+/ctx/scripts/generate-os-release.sh padkos "${MACROSOFTY_VERSION:-0.1.0-dev}"
+
+# --- Strip notes ------------------------------------------------------------
+# An OCI-layer audit on 2026-04-26 (docs/iso-size-analysis.md) proved
+# Aurora upstream does NOT ship any of: akonadi-server, kmail, kontact,
+# korganizer, kaddressbook, kalendar, kdepim, krita, kdenlive, digikam.
+# So there's nothing to strip here — Aurora is already lean of the
+# obvious heavyweights. Padkos's differentiation is the offline-first
+# RPMs added below, not what's removed.
+
+# --- Strip Aurora-specific welcome popups -----------------------------------
+dnf5 -y remove plasma-welcome || true
+
+# --- Essential additions ----------------------------------------------------
+# Aurora ships Firefox + Thunderbird as Flatpaks via firstboot, which
+# depends on the firstboot service firing AND the user having internet
+# at first login. For a "works on first boot, even offline" experience
+# (the Padkos promise — see docs/app-curation.md §4.4), we install:
+#
+#   - Firefox RPM      — captive-portal authentication, local files
+#   - LibreOffice RPM  — offline document creation, the load-bearing
+#                         "documents" word in Padkos's promise
+#
+# Thunderbird intentionally stays as Aurora's Flatpak — fresh email
+# setup needs internet anyway, so RPM-vs-Flatpak makes no functional
+# difference for that one. See docs/app-curation.md §4.4 for the
+# rationale.
+#
+# `jq` is needed by the macrosofty-theme apply script below.
+# `yad` powers the firstboot welcome dialog (renders Tjopper inline,
+# which kdialog cannot do).
+dnf5 -y install firefox libreoffice jq yad || true
+
+# --- AppHelperThingy build deps ---------------------------------------------
+# Required by install-apphelperthingy.sh (clone, venv build, desktop +
+# icon cache refresh). Separate from the Padkos extras above because
+# these MUST install — the AHT install hard-fails downstream if they
+# don't.
+dnf5 -y install git python3 desktop-file-utils gtk-update-icon-cache
+
+# --- Bundle AppHelperThingy -------------------------------------------------
+/ctx/scripts/install-apphelperthingy.sh
+
+# --- Shared system files ----------------------------------------------------
+# Includes the theme pack assets at /usr/share/macrosofty/themes/default/
+# and the macrosofty-theme apply script at /usr/bin/macrosofty-theme.
+
+if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/dev/null)" ]; then
+    cp -r /ctx/system_files/shared/. /
+fi
+
+# --- Apply the default Macrosofty theme pack --------------------------------
+# Kickoff icon, wallpaper, MOTD, GRUB distributor, Plymouth theme, SDDM
+# background, Look-and-Feel. Re-runnable later by the user via
+# `sudo macrosofty-theme apply <pack>` once we ship more packs.
+macrosofty-theme apply default
+
+# --- Scrub upstream branding from inherited menu items -----------------
+/ctx/scripts/scrub-upstream-branding.sh "$EDITION"
+
+# --- Tidy the package metadata ----------------------------------------------
+dnf5 clean all
+
+echo "::endgroup::"

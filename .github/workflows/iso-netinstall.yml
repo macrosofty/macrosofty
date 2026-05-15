@@ -1,0 +1,172 @@
+---
+name: Build edition netinstall ISOs
+on:
+  workflow_dispatch:
+    inputs:
+      edition:
+        description: "Edition (or 'all')"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - hearty
+          - chunky
+          - padkos
+          - braai
+  workflow_run:
+    workflows: ["Build edition images"]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  netinstall:
+    name: Netinstall ${{ matrix.edition }}
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    strategy:
+      fail-fast: false
+      matrix:
+        edition:
+          - hearty
+          - chunky
+          - padkos
+          - braai
+
+    permissions:
+      contents: read
+
+    env:
+      EDITION: ${{ matrix.edition }}
+      SELECTED_EDITION: ${{ inputs.edition || 'all' }}
+      # Fedora 43 release ISO. Bumping the minor (43-1.X.iso) tracks
+      # respins; current as of 2026-04-26 is 1.6. Update when a respin
+      # ships and the URL 404s.
+      FEDORA_NETINST_URL: "https://download.fedoraproject.org/pub/fedora/linux/releases/43/Server/x86_64/iso/Fedora-Server-netinst-x86_64-43-1.6.iso"
+      FEDORA_NETINST_FILE: "Fedora-Server-netinst-x86_64-43-1.6.iso"
+
+    steps:
+      - name: Skip non-selected edition
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "$SELECTED_EDITION" != "all" ] && [ "$SELECTED_EDITION" != "$EDITION" ]; then
+              echo "Skipping $EDITION — only $SELECTED_EDITION requested."
+              echo "skip=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Checkout
+        if: env.skip != 'true'
+        uses: actions/checkout@v5
+
+      - name: Free disk space
+        if: env.skip != 'true'
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Cache Fedora netinst ISO
+        if: env.skip != 'true'
+        id: cache-fedora-iso
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.FEDORA_NETINST_FILE }}
+          key: fedora-netinst-${{ env.FEDORA_NETINST_FILE }}
+
+      - name: Download Fedora netinst ISO
+        if: env.skip != 'true' && steps.cache-fedora-iso.outputs.cache-hit != 'true'
+        run: |
+          curl -fL -o "$FEDORA_NETINST_FILE" "$FEDORA_NETINST_URL"
+          size=$(stat -c %s "$FEDORA_NETINST_FILE")
+          echo "Downloaded $size bytes."
+          if [ "$size" -lt 500000000 ]; then
+              echo "Fedora ISO download too small — likely 404 or mirror error." >&2
+              exit 1
+          fi
+
+      - name: Substitute edition into kickstart
+        if: env.skip != 'true'
+        run: |
+          sed "s|@@EDITION@@|${EDITION}|g" \
+              editions/netinstall/kickstart.in \
+              > "macrosofty-${EDITION}.ks"
+          echo "::group::Generated kickstart"
+          cat "macrosofty-${EDITION}.ks"
+          echo "::endgroup::"
+
+      - name: Pre-pull Fedora image (with retry)
+        if: env.skip != 'true'
+        run: |
+          # registry.fedoraproject.org occasionally resets connections under
+          # parallel-pull load (all 4 edition jobs hit it at once). Retry up
+          # to 5 times with linear backoff before letting the build fail.
+          for attempt in 1 2 3 4 5; do
+              if docker pull registry.fedoraproject.org/fedora:43; then
+                  echo "fedora:43 pulled on attempt $attempt"
+                  exit 0
+              fi
+              echo "pull attempt $attempt failed; sleeping $((attempt * 10))s"
+              sleep $((attempt * 10))
+          done
+          echo "fedora:43 pull failed after 5 attempts" >&2
+          exit 1
+
+      - name: Build netinstall ISO (rebrand install.img + mkksiso)
+        if: env.skip != 'true'
+        run: |
+          # Two-pass build:
+          #   Pass 1 — scripts/rebrand-netinstall-iso.sh extracts install.img
+          #            from the stock Fedora ISO, overlays Macrosofty
+          #            anaconda assets + os-release, and repacks the ISO
+          #            with xorriso preserving El Torito boot. Output:
+          #            macrosofty-base-${EDITION}-amd64.iso (Macrosofty
+          #            installer chrome, no kickstart yet).
+          #   Pass 2 — mkksiso embeds our kickstart into the rebranded
+          #            base ISO. Output: the final shipping ISO.
+          # squashfs-tools is needed for unsquashfs/mksquashfs;
+          # xorriso comes via lorax's deps but we install it explicitly
+          # to keep this resilient to future lorax dep changes.
+          docker run --rm --privileged \
+              -v "$PWD:/work" \
+              -w /work \
+              -e EDITION="$EDITION" \
+              -e FEDORA_NETINST_FILE="$FEDORA_NETINST_FILE" \
+              registry.fedoraproject.org/fedora:43 \
+              bash -c '
+                set -euxo pipefail
+                dnf install -y lorax squashfs-tools xorriso
+                ./scripts/rebrand-netinstall-iso.sh \
+                    "${FEDORA_NETINST_FILE}" \
+                    "${EDITION}" \
+                    "macrosofty-base-${EDITION}-amd64.iso"
+                mkksiso \
+                    --ks "macrosofty-${EDITION}.ks" \
+                    "macrosofty-base-${EDITION}-amd64.iso" \
+                    "macrosofty-${EDITION}-netinstall-amd64.iso"
+                rm -f "macrosofty-base-${EDITION}-amd64.iso"
+              '
+
+      - name: Stage ISO + checksum for upload
+        if: env.skip != 'true'
+        id: stage
+        run: |
+          mkdir -p upload
+          OUT="macrosofty-${EDITION}-netinstall-amd64.iso"
+          DATED="macrosofty-${EDITION}-netinstall-$(date -u +%Y%m%d).iso"
+          mv "${OUT}" "upload/${DATED}"
+          ( cd upload && sha256sum "${DATED}" > "${DATED}.sha256" )
+          ls -lh upload/
+          echo "name=$(basename ${DATED} .iso)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload netinstall ISO artefact
+        if: env.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.stage.outputs.name }}
+          path: upload/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

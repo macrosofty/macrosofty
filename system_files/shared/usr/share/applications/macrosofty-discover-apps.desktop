@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Discover Apps
+GenericName=App Catalogue
+Comment=Browse software you can add to your computer.
+Exec=apphelperthingy --page=catalogue
+Icon=apphelperthingy
+Terminal=false
+StartupNotify=true
+Categories=System;Settings;PackageManager;
+Keywords=Apps;Software;Install;Browse;Catalogue;Catalog;Discover;Add;
