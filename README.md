@@ -38,7 +38,7 @@ We don't reinvent. We curate. The plumbing is theirs. The friendly face is ours.
 There's no installable image yet. When there is, we'll say so loudly. Until then this repo holds the plan, the scaffolding, and the trail of decisions.
 
 - [`VISION.md`](./VISION.md) — what we're building, who it's for, what it isn't.
-- [`CLAUDE.md`](./CLAUDE.md) — how we work on it.
+- [`BRIEF.md`](./BRIEF.md) — how we work on it.
 - [`editions/`](./editions/) — Containerfiles per edition.
 
 To follow along, **watch this repo**. Discussions go live around v0.1.

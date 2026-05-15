@@ -4,7 +4,7 @@
 
 A **theme pack** is a directory containing the visual-identity assets for a Macrosofty edition: kickoff icon, wallpaper, login background, MOTD, GRUB distributor, Plymouth boot splash, SDDM theme bits, KDE Look-and-Feel package contents. One pack covers the entire visual experience; the `macrosofty-theme` script applies it in one go.
 
-Packs are the foundation for the upcoming "Make it yours" UI (per CLAUDE.md, v0.3) — switching pack at runtime is one `macrosofty-theme apply <pack>` call.
+Packs are the foundation for the upcoming "Make it yours" UI (per BRIEF.md, v0.3) — switching pack at runtime is one `macrosofty-theme apply <pack>` call.
 
 ## Pack layout
 

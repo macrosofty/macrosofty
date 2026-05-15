@@ -1,10 +1,10 @@
-# CLAUDE.md — Macrosofty
+# BRIEF — Macrosofty
 
 ## What this project is
 
 Macrosofty is a Linux distribution aimed at **ordinary people who want a computer that respects them**. It's built on **Universal Blue + Fedora atomic desktop** (the same lineage Bazzite, Bluefin, and Aurora come from). The value proposition isn't new engineering — it's **curation, branding, and a friendly face** on top of an already-solved "atomic Linux that doesn't break" foundation.
 
-This repository holds the distro source — Containerfiles, build pipeline, system configs, branding assets, signed-ISO publishing workflows. The marketing site is maintained in a separate repository because the brand/voice/visual implementation is property, not Apache-2.0 code. The voice rules in this `CLAUDE.md` and `VISION.md` are the source of truth for tone — the website renders that voice; it doesn't define it.
+This repository holds the distro source — Containerfiles, build pipeline, system configs, branding assets, signed-ISO publishing workflows. The marketing site is maintained in a separate repository because the brand/voice/visual implementation is property, not Apache-2.0 code. The voice rules in this `BRIEF.md` and `VISION.md` are the source of truth for tone — the website renders that voice; it doesn't define it.
 
 ## The voice and the metaphor
 
@@ -66,7 +66,7 @@ The overall tone is **dry, friendly, self-aware, never mean**. Think Linux Mint'
 macrosofty/
 ├── README.md                     (public-facing 1-pager)
 ├── VISION.md                     (product/marketing/editions)
-├── CLAUDE.md                     (this file)
+├── BRIEF.md                      (this file)
 ├── editions/
 │   ├── hearty/Containerfile
 │   ├── chunky/Containerfile
@@ -102,7 +102,7 @@ macrosofty/
 | GitHub org | `github.com/macrosofty` | |
 | Primary domain | `macrosofty.org` | Canonical; `.com`, `.co.za`, `.org.za` redirect to `.org` |
 
-## What you (Claude) should and shouldn't do in this repo
+## What contributors should and shouldn't do in this repo
 
 ### Should
 - **Keep the door metaphor alive** everywhere. If a piece of copy references "Windows" directly, rewrite it into door language.

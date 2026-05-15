@@ -343,11 +343,11 @@ The welcome app lives in the system tray after setup — optional re-run of pick
 
 ## Project history
 
-- **2026-04-24 (first day):** VISION + CLAUDE brief written. Renamed from "Microslop" after discovering `microslop.com` was a live "Microsoft AI Slop Tracker" (brand collision). Name reference: `macro` (big) + `softy` (easy) = "big and easy" — plus an obvious Microsoft parody that we never spell out. Website scaffolded in Astro 5 + Tailwind. Apache 2.0 LICENSE. ARM edition ("Bokkie") researched and confirmed tentative-post-v1.
+- **2026-04-24 (first day):** VISION + project brief written. Renamed from "Microslop" after discovering `microslop.com` was a live "Microsoft AI Slop Tracker" (brand collision). Name reference: `macro` (big) + `softy` (easy) = "big and easy" — plus an obvious Microsoft parody that we never spell out. Website scaffolded in Astro 5 + Tailwind. Apache 2.0 LICENSE. ARM edition ("Bokkie") researched and confirmed tentative-post-v1.
 
 ## Hand-off
 
-This document and `CLAUDE.md` are the full brief. They should be enough for a competent Linux engineer (or an agent) to go from "nothing" to "scaffolded repo with a hearty ISO you can install in a VM" in a weekend.
+This document and `BRIEF.md` are the full brief. They should be enough for a competent Linux engineer (or an agent) to go from "nothing" to "scaffolded repo with a hearty ISO you can install in a VM" in a weekend.
 
 If something's unclear, the right instinct is to check what **Bluefin** or **Bazzite** does for the same question — that's usually the answer.
 

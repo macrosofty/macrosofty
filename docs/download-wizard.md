@@ -121,6 +121,6 @@ This is design-level for now — not landed. The first website implementation ca
 
 ## What's deferred
 
-- **Localisation.** v0.1 is English-only. Afrikaans / SA-flavoured copy comes when the website is bilingual (post-v1 per CLAUDE.md).
+- **Localisation.** v0.1 is English-only. Afrikaans / SA-flavoured copy comes when the website is bilingual (post-v1 per BRIEF.md).
 - **Edition comparison page.** A "side-by-side compare" view for users who want detail before picking. Different shape from the wizard; useful for the analytical user, but not the audience the wizard targets. Future work.
 - **"What's in this edition?" expandable details.** The wizard recommendation result could expand to show "Padkos comes with Firefox, LibreOffice, Thunderbird, ..." — useful but adds complexity. v0.2 if asked for.

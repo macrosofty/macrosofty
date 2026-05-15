@@ -51,7 +51,7 @@ Same flow, lower ceremony. Typos and clarity fixes often get merged within a day
 
 ### For the voice police
 
-If a PR introduces text that **breaks the door metaphor** (says "Windows" or "Microsoft" in user-facing copy), reviewers will ask for a rewrite. This isn't us being precious — the joke only works if nobody spells it out. See `CLAUDE.md` for background.
+If a PR introduces text that **breaks the door metaphor** (says "Windows" or "Microsoft" in user-facing copy), reviewers will ask for a rewrite. This isn't us being precious — the joke only works if nobody spells it out. See `BRIEF.md` for background.
 
 ## Testing expectations
 

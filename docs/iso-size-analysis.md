@@ -159,13 +159,13 @@ The compression flag is the obvious first thing to check — biggest payoff per 
 
 ## 5. The DE question (resolved 2026-04-26 — KDE everywhere, revisit on evidence)
 
-Switching the DE for one or more editions is the single biggest size lever. It's also the biggest brand-cohesion break — CLAUDE.md says "Four editions, one identity. Hearty, Chunky, Padkos, Braai all feel like Macrosofty. No edition is visually a different OS."
+Switching the DE for one or more editions is the single biggest size lever. It's also the biggest brand-cohesion break — BRIEF.md says "Four editions, one identity. Hearty, Chunky, Padkos, Braai all feel like Macrosofty. No edition is visually a different OS."
 
 The specific candidate weighed: an XFCE-flavoured Padkos. Real considerations on both sides:
 
 **For:** runtime weight on 4 GB-RAM hardware (KDE 6 idle ~400–600 MB vs XFCE ~250 MB), structurally honest delivery of "lighter than Hearty," recognition value among Linux-on-old-hardware users.
 
-**Against:** breaks the "one identity" principle on sight (different panel idiom, file manager, settings UI). No upstream atomic XFCE base exists (Aurora is KDE, Bluefin is GNOME, Bazzite is KDE; Fedora's atomic spins are Silverblue + Kinoite, no XFCE) — we'd be doing original distro engineering rather than curation, violating CLAUDE.md's "inherit ruthlessly" principle. Significant ongoing maintenance for a love-project. **Crucially: we have no evidence yet that KDE Padkos actually struggles on the target hardware.**
+**Against:** breaks the "one identity" principle on sight (different panel idiom, file manager, settings UI). No upstream atomic XFCE base exists (Aurora is KDE, Bluefin is GNOME, Bazzite is KDE; Fedora's atomic spins are Silverblue + Kinoite, no XFCE) — we'd be doing original distro engineering rather than curation, violating BRIEF.md's "inherit ruthlessly" principle. Significant ongoing maintenance for a love-project. **Crucially: we have no evidence yet that KDE Padkos actually struggles on the target hardware.**
 
 **Resolution (2026-04-26):**
 - **v0.1:** ship KDE Plasma on every edition. Boot-test Padkos on appropriate hardware. Brand cohesion + inherit-ruthlessly + no-premature-optimisation all pull the same direction.

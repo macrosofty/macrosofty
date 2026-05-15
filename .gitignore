@@ -1,17 +1,18 @@
-# Node / Astro (website)
-website/node_modules/
-website/dist/
-website/.astro/
-website/.cache/
+# Node / Astro (website builds, if ever colocated)
+node_modules/
+dist/
+out/
+build/
+.astro/
+.cache/
 
-# logs
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
 pnpm-debug.log*
 
-# environment
+# Environment
 .env
 .env.local
 .env.*.local
@@ -24,20 +25,22 @@ Thumbs.db
 .vscode/
 *.swp
 
-# Build artifacts (distro — will come later)
-dist/
-out/
-build/
+# Distro build artifacts
 *.iso
 
-# Test screenshots (saved during QEMU tests; not source-of-truth)
+# Test screenshots
 Screenshot_*.png
 
-# Whole leftover website checkout (the site moved to its own private repo)
-/website/
-
-# Publish staging output (regenerated on every publish)
-/macrosofty-public-staging/
-
-# NFS dangling files
-.nfs*
+# --- Belt-and-braces: nothing AI-toolchain-related lands in this repo ------
+# (The work is built in a private workspace; this is the curated public mirror.
+# These patterns are defence-in-depth against accidental publishing.)
+CLAUDE.md
+**/CLAUDE.md
+CLAUDE_*.md
+claude-*.md
+.claude/
+**/.claude/
+SESSION_NOTES_*.md
+**/SESSION_NOTES_*.md
+.clauditor/
+**/.clauditor/

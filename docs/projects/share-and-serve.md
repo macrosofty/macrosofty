@@ -696,4 +696,4 @@ This proposal is open to revision. Edits welcome via PR; please update the "Last
 
 ## Version history
 
-- **2026-04-26 (v0):** initial proposal drafted from conversation between founder and Claude. Roadmap entry #39.
+- **2026-04-26 (v0):** initial proposal drafted from a working session. Roadmap entry #39.

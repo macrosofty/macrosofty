@@ -130,7 +130,7 @@ Every step has a "Skip" and a "Why this?" link. None are blocking. After complet
 
 ### #2: Make It Yours panel
 
-**Status:** mentioned in CLAUDE.md as v0.3 target
+**Status:** mentioned in BRIEF.md as v0.3 target
 **Audience:** all four personas; especially the Windows-tired user wanting "their" computer
 **Effort:** Large (months)
 
@@ -182,7 +182,7 @@ KDE's built-in help is essentially a 200-page PDF. When something goes wrong, us
 
 **Open questions:**
 - How much content is "enough" for v1? (Suggested: top 50 questions written by hand, then expand as users tell us what they searched for.)
-- Do we want analytics on what's searched? (CLAUDE.md says no telemetry. Could ask explicit consent for "help us improve the Helper" with one-question surveys.)
+- Do we want analytics on what's searched? (BRIEF.md says no telemetry. Could ask explicit consent for "help us improve the Helper" with one-question surveys.)
 
 ---
 
@@ -237,7 +237,7 @@ These are the features that, if Macrosofty has them, separate us from Aurora/Blu
 
 ### #6: Local AI helper
 
-**Status:** idea (related to claude-code-setup considerations)
+**Status:** idea (related to dev-tooling setup considerations)
 **Audience:** all personas, especially the privacy-conscious refugee
 **Effort:** Large (months)
 

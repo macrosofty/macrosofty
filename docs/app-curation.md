@@ -359,7 +359,7 @@ The `build.sh` for each edition copies its `Brewfile` to `/usr/share/ublue-os/ho
 ## 7. Open questions to revisit
 
 - **Should Hearty also ship offline-first-boot RPMs (Firefox + LibreOffice)?** Currently no — modern-hardware buyer almost always has wifi, and we save ~950 MB image weight. Revisit if "I installed Hearty offline and nothing worked" appears in GitHub Discussions.
-- **Welcome-app picker UI.** VISION mentions a firstboot picker for optional apps (Slack, Telegram, GIMP-on-Hearty, etc.). Not in v0.1 scope; covered when "Make it yours" app lands (v0.3 target per CLAUDE.md).
+- **Welcome-app picker UI.** VISION mentions a firstboot picker for optional apps (Slack, Telegram, GIMP-on-Hearty, etc.). Not in v0.1 scope; covered when "Make it yours" app lands (v0.3 target per BRIEF.md).
 - **Image weight verification.** Padkos and Chunky-LJ each gain ~700 MB from LibreOffice RPM (Firefox is already in Padkos; Chunky-LJ adds ~250 MB for Firefox RPM too). Verify on the next build that:
   - Padkos stays under its current ~4.6 GB ISO budget (~700 MB of LibreOffice is net new).
   - Chunky-LJ lands somewhere around 5.5 GB — comfortably under Chunky-Modern's 6.2 GB.

@@ -7,7 +7,7 @@
 # which gets seeded into ~/.config/autostart/ when Anaconda creates the
 # initial user.
 #
-# Voice rules: see CLAUDE.md (door metaphor, no naming the rival, SA
+# Voice rules: see BRIEF.md (door metaphor, no naming the rival, SA
 # flavour sparingly). One "howzit" per dialog is the limit.
 
 set -euo pipefail
