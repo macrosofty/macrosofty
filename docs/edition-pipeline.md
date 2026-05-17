@@ -22,7 +22,7 @@ scripts/
 system_files/shared/
 ├── usr/bin/macrosofty-theme  the theme-pack apply script
 └── usr/share/macrosofty/
-    └── themes/default/       the default theme pack
+    └── themes/saffron/       the default theme pack
 ```
 
 Each edition's `Containerfile` differs in just the `FROM` line and the `EDITION` ARG. Each `build.sh` is ~95% identical to the others — install jq, strip plasma-welcome, copy system_files, apply theme — with only the edition-specific bits (Padkos's Firefox+LibreOffice RPMs, future Chunky-LJ's office set) varying.
@@ -45,7 +45,7 @@ display_name = "Padkos"
 description = "Old hardware, new places."
 ansi_color = "122;136;104"           # sage green; matches generate-os-release.sh
 base_image = "ghcr.io/ublue-os/aurora:stable"
-theme_pack = "default"
+theme_pack = "saffron"
 
 # RPMs to install on top of the base image
 install_rpms = [
@@ -117,8 +117,8 @@ GitHub Actions matrix becomes a list of edition names, not a list of Containerfi
 ## What ships in v0.1 (today)
 
 - `system_files/shared/usr/bin/macrosofty-theme` — the theme-pack apply script.
-- `system_files/shared/usr/share/macrosofty/themes/default/` — the default pack with kickoff icon, wallpaper, login background, logo PNG, MOTD, GRUB distributor, Plymouth theme.
-- Per-edition `build.sh` updated to install `jq`, strip `plasma-welcome`, and `macrosofty-theme apply default`.
+- `system_files/shared/usr/share/macrosofty/themes/saffron/` — the default pack with kickoff icon, wallpaper, login background, logo PNG, MOTD, GRUB distributor, Plymouth theme.
+- Per-edition `build.sh` updated to install `jq`, strip `plasma-welcome`, and `macrosofty-theme apply saffron`.
 - `docs/theme-packs.md` documenting the pack format.
 - This file (`docs/edition-pipeline.md`) capturing the v0.2 direction.
 

@@ -61,7 +61,7 @@ dnf5 -y install git python3 desktop-file-utils gtk-update-icon-cache
 /ctx/scripts/install-apphelperthingy.sh
 
 # --- Shared system files ----------------------------------------------------
-# Includes the theme pack assets at /usr/share/macrosofty/themes/default/
+# Includes the theme pack assets at /usr/share/macrosofty/themes/saffron/
 # and the macrosofty-theme apply script at /usr/bin/macrosofty-theme.
 
 if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/dev/null)" ]; then
@@ -72,7 +72,7 @@ fi
 # Kickoff icon, wallpaper, MOTD, GRUB distributor, Plymouth theme, SDDM
 # background, Look-and-Feel. Re-runnable later by the user via
 # `sudo macrosofty-theme apply <pack>` once we ship more packs.
-macrosofty-theme apply default
+macrosofty-theme apply saffron
 
 # --- Scrub upstream branding from inherited menu items -----------------
 /ctx/scripts/scrub-upstream-branding.sh "$EDITION"

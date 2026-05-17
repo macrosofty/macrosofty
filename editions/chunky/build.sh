@@ -42,7 +42,7 @@ if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/
 fi
 
 # --- Apply the default Macrosofty theme pack --------------------------------
-macrosofty-theme apply default
+macrosofty-theme apply saffron
 
 # --- Scrub upstream branding ------------------------------------------------
 /ctx/scripts/scrub-upstream-branding.sh "$EDITION"

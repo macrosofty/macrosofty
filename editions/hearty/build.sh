@@ -51,7 +51,7 @@ dnf5 -y remove plasma-welcome || true
 # --- Shared system files ----------------------------------------------------
 # Copy anything from /ctx/system_files/shared into the image rootfs. This
 # includes the Macrosofty theme pack assets at
-# /usr/share/macrosofty/themes/default/ and the macrosofty-theme apply
+# /usr/share/macrosofty/themes/saffron/ and the macrosofty-theme apply
 # script at /usr/bin/macrosofty-theme.
 
 if [ -d /ctx/system_files/shared ] && [ -n "$(ls -A /ctx/system_files/shared 2>/dev/null)" ]; then
@@ -63,7 +63,7 @@ fi
 # SDDM background, and (placeholder) Look-and-Feel. Re-runnable later by
 # the user via `sudo macrosofty-theme apply <pack>` when "Make it yours"
 # lands; same script either way.
-macrosofty-theme apply default
+macrosofty-theme apply saffron
 
 # --- Scrub upstream branding from inherited menu items -----------------
 # Rewrites "Aurora" → "Macrosofty" in the Name/Comment/etc. fields of

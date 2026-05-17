@@ -5,7 +5,7 @@
 #
 # Run this after editing any of:
 #   branding/logo-master.svg                       (the doorway icon)
-#   branding/themes/default/source/wallpaper.svg   (default dark wallpaper)
+#   branding/themes/saffron/source/wallpaper.svg   (default dark wallpaper)
 #   branding/themes/tjopper/source/background.svg  (Tjopper-pack wallpaper bg)
 #   branding/tjopper/anaconda-header.svg           (Anaconda header banner)
 #   branding/tjopper/tjopper-*.svg                 (Tjopper expressions; wave
@@ -20,7 +20,7 @@
 #     build time (generate-os-release.sh, scrub-upstream-branding.sh)
 #     and at netinstall ISO build time (rebrand-netinstall-iso.sh).
 #     No host-time regen is required for string changes.
-#   - system_files/shared/usr/share/macrosofty/themes/default/icons/
+#   - system_files/shared/usr/share/macrosofty/themes/saffron/icons/
 #     start-here-*.svg — these are hand-tuned for the kickoff-icon
 #     context (different viewBox for the symbolic variant). Edit the
 #     SVGs directly.
@@ -34,7 +34,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHARED="$REPO_ROOT/system_files/shared/usr/share"
 
 LOGO_MASTER="$REPO_ROOT/branding/logo-master.svg"
-WALLPAPER_SVG="$REPO_ROOT/branding/themes/default/source/wallpaper.svg"
+WALLPAPER_SVG="$REPO_ROOT/branding/themes/saffron/source/wallpaper.svg"
 ANACONDA_HEADER_SVG="$REPO_ROOT/branding/tjopper/anaconda-header.svg"
 TJOPPER_SRC_DIR="$REPO_ROOT/branding/tjopper"
 TJOPPER_BG_SVG="$REPO_ROOT/branding/themes/tjopper/source/background.svg"
@@ -94,11 +94,11 @@ magick -background none "$LOGO_MASTER" -strip -resize x69 \
 echo "  + sidebar-logo.png     (150x69     from logo-master.svg)"
 
 # --- 3. Macrosofty default theme pack --------------------------------------
-# Applied at OCI build time by `macrosofty-theme apply default` per
+# Applied at OCI build time by `macrosofty-theme apply saffron` per
 # edition. Pack components are listed in pack.json next to these files.
 echo
 echo "[3/5] Macrosofty default theme pack..."
-THEME_DIR="$SHARED/macrosofty/themes/default"
+THEME_DIR="$SHARED/macrosofty/themes/saffron"
 mkdir -p "$THEME_DIR/plymouth"
 
 # Wallpaper + login background — same image, two filenames (KDE looks

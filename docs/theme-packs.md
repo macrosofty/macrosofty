@@ -32,7 +32,7 @@ Packs are the foundation for the upcoming "Make it yours" UI (per BRIEF.md, v0.3
 
 ```json
 {
-  "name": "default",
+  "name": "saffron",
   "displayName": "Macrosofty Default",
   "description": "The saffron-arch theme.",
   "version": "0.1.0",
@@ -57,7 +57,7 @@ Every component is **optional**. A pack can be partial — only the components p
 ## How `macrosofty-theme apply` works
 
 ```bash
-sudo macrosofty-theme apply default      # apply the default pack
+sudo macrosofty-theme apply saffron      # apply the default pack
 macrosofty-theme list                     # list installed packs
 macrosofty-theme current                  # show currently applied pack
 ```
@@ -83,10 +83,10 @@ At image-build time, each edition's `build.sh` does:
 ```bash
 dnf5 install -y jq
 cp -r /ctx/system_files/shared/. /
-macrosofty-theme apply default
+macrosofty-theme apply saffron
 ```
 
-That copies the pack into `/usr/share/macrosofty/themes/default/`, copies the apply script to `/usr/bin/macrosofty-theme`, and runs the apply at build time so the assets are pre-placed when the user first boots.
+That copies the pack into `/usr/share/macrosofty/themes/saffron/`, copies the apply script to `/usr/bin/macrosofty-theme`, and runs the apply at build time so the assets are pre-placed when the user first boots.
 
 After install, the user can re-apply a different pack with `sudo macrosofty-theme apply <pack-name>`.
 
