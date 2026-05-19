@@ -256,8 +256,37 @@ PLYMOUTH_CONF
         fi
     fi
 
-    info "  Plymouth theme -> macrosofty (alternatives + symlink + plymouthd.conf; spinner watermark scrubbed)"
-    info "  initramfs is regenerated at bootc deploy time and will pick up the new theme"
+    # Layer 5: scrub the BGRT system-logo watermark. The bgrt theme also
+    # renders /usr/share/pixmaps/system-logo-white.png as a centred
+    # wordmark when no theme-specific watermark resolves. Upstream
+    # (fedora-logos / aurora-logos RPM) ships the Aurora wordmark there.
+    # Without this scrub, the first-boot splash showed Aurora because
+    # the pre-baked initramfs (built from the kernel RPM before our
+    # theme applied) had no theme dir and fell back to bgrt + this
+    # logo. Replace with our logo so any fallback can't leak Aurora.
+    local system_logo=/usr/share/pixmaps/system-logo-white.png
+    if [ -f "$system_logo" ] && [ -f "$theme_dir/logo.png" ]; then
+        cp -f "$theme_dir/logo.png" "$system_logo"
+    fi
+
+    # Layer 6: rebuild the initramfs. The image ships a kernel-RPM-built
+    # initramfs.img that pre-dates this theme apply; it has no theme
+    # files baked in and falls back to bgrt + system-logo-white.png at
+    # first boot. Regenerate it now, in the OCI build container, so our
+    # theme + plymouthd.conf land inside the initrd that ships in the
+    # image. dracut --kver picks the kernel actually installed.
+    if command -v dracut >/dev/null 2>&1; then
+        local kver
+        kver=$(ls /usr/lib/modules 2>/dev/null | head -1)
+        if [ -n "$kver" ] && [ -d "/usr/lib/modules/$kver" ]; then
+            dracut --force --no-hostonly --kver "$kver" \
+                "/usr/lib/modules/$kver/initramfs.img" 2>&1 \
+                | sed 's/^/    dracut: /' || \
+                info "  dracut rebuild failed (continuing — bootc deploy will retry)"
+        fi
+    fi
+
+    info "  Plymouth theme -> macrosofty (alternatives + symlink + plymouthd.conf; spinner + system-logo watermarks scrubbed; initramfs rebuilt)"
 }
 
 apply_lookandfeel() {
