@@ -11,6 +11,14 @@
 #   branding/tjopper/tjopper-*.svg                 (Tjopper expressions; wave
 #                                                   is also composited into
 #                                                   the Tjopper wallpaper)
+#   branding/Gemini_Generated_Image_*.png          (19 slideshow source images;
+#                                                   resized + logo-overlaid into
+#                                                   /usr/share/backgrounds/macrosofty/)
+#   branding/tjopper/tjopper-wave.svg              (also composited with tjopper-
+#   branding/tjopper/tjopper-heart.svg              heart on a saffron radial glow
+#                                                   into the plasma-setup
+#                                                   "finished" wizard PNG that
+#                                                   ships Katie + Konqi upstream)
 #
 # Idempotent. Re-running with no source changes overwrites with bit-
 # equivalent output (modulo PNG mtime / sub-pixel rounding).
@@ -59,7 +67,7 @@ echo
 # generate-logos.sh handles the freedesktop hicolor tree (16-512 px PNGs +
 # scalable SVG + pixmaps fallback). It also installs the canonical
 # /usr/share/macrosofty/logo.svg.
-echo "[1/5] Icon theme + scalable SVG (delegating to generate-logos.sh)..."
+echo "[1/7] Icon theme + scalable SVG (delegating to generate-logos.sh)..."
 "$REPO_ROOT/scripts/generate-logos.sh"
 
 # --- 2. Anaconda installer pixmaps -----------------------------------------
@@ -67,7 +75,7 @@ echo "[1/5] Icon theme + scalable SVG (delegating to generate-logos.sh)..."
 # The rebrand script overlays whatever we put here onto the upstream
 # Fedora installer rootfs.
 echo
-echo "[2/5] Anaconda installer pixmaps..."
+echo "[2/7] Anaconda installer pixmaps..."
 ANACONDA_DIR="$SHARED/anaconda/pixmaps"
 mkdir -p "$ANACONDA_DIR"
 
@@ -85,6 +93,18 @@ magick -background none "$ANACONDA_HEADER_SVG" -strip -resize 800x88 \
     "$ANACONDA_DIR/anaconda_header.png"
 echo "  + anaconda_header.png  (800x88     from tjopper/anaconda-header.svg)"
 
+# 1920x132 nav-box topbar background — Aurora's fedora.css points
+# AnacondaSpokeWindow #nav-box at /usr/share/anaconda/pixmaps/topbar-bg.png.
+# If we don't ship our own, Aurora's purple aurora-borealis art bleeds
+# through every spoke header. Same SVG as anaconda_header.png, rendered
+# at 132px tall (preserving aspect → ~1200px wide) and composited
+# centred on a warm-charcoal canvas that matches the saffron theme.
+magick -background '#1f1a14' -size 1920x132 canvas:'#1f1a14' \
+    \( "$ANACONDA_HEADER_SVG" -background none -resize x132 \) \
+    -gravity center -composite -strip \
+    "$ANACONDA_DIR/topbar-bg.png"
+echo "  + topbar-bg.png        (1920x132   from tjopper/anaconda-header.svg on warm-charcoal)"
+
 # 150x69 doorway in the sidebar — replaces the upstream "fedora"
 # wordmark. Logo rendered at 69x69 then padded to 150 width with
 # transparent canvas to match where the original logo sat.
@@ -97,7 +117,7 @@ echo "  + sidebar-logo.png     (150x69     from logo-master.svg)"
 # Applied at OCI build time by `macrosofty-theme apply saffron` per
 # edition. Pack components are listed in pack.json next to these files.
 echo
-echo "[3/5] Macrosofty default theme pack..."
+echo "[3/7] Macrosofty default theme pack..."
 THEME_DIR="$SHARED/macrosofty/themes/saffron"
 mkdir -p "$THEME_DIR/plymouth"
 
@@ -123,7 +143,7 @@ echo "  + plymouth/logo.png        (identical to logo-256.png)"
 # them at runtime. anaconda-header.svg is rasterised above (step 2)
 # rather than copied; it is not used at runtime.
 echo
-echo "[4/5] Tjopper SVG library..."
+echo "[4/7] Tjopper SVG library..."
 TJOPPER_DEST="$SHARED/macrosofty/tjopper"
 mkdir -p "$TJOPPER_DEST"
 copied=0
@@ -145,7 +165,7 @@ echo "  + $copied SVGs copied to /usr/share/macrosofty/tjopper/"
 # at the target sizes — no inlining of the wave SVG into the bg, so a
 # future edit to tjopper-wave.svg flows through automatically.
 echo
-echo "[5/5] Macrosofty Tjopper theme pack..."
+echo "[5/7] Macrosofty Tjopper theme pack..."
 TJOPPER_THEME_DIR="$SHARED/macrosofty/themes/tjopper"
 mkdir -p "$TJOPPER_THEME_DIR"
 
@@ -160,6 +180,71 @@ magick "$TMP_BG" "$TMP_TJ" -gravity center -geometry +0-40 -composite -strip \
 cp -f "$TJOPPER_THEME_DIR/wallpaper-1920x1080.png" "$TJOPPER_THEME_DIR/login-bg.png"
 echo "  + wallpaper-1920x1080.png  (Tjopper wave on brand bg, 1920x1080)"
 echo "  + login-bg.png             (identical to wallpaper)"
+
+# --- 6. Desktop slideshow wallpapers ---------------------------------------
+# 19 Gemini-sourced wallpapers, resized to 2560x1396 JPEG q92 and tagged
+# with the Macrosofty doorway in the bottom-right. The doorway sits over
+# a localised 96x96 blur patch that erases the Gemini sparkle watermark
+# baked into every source image. Lands in /usr/share/backgrounds/
+# macrosofty/ and is wired up by macrosofty-apply-defaults as the Plasma
+# wallpaper + lockscreen slideshow.
+#
+# Ordering: sorted by source filename. If you add/remove a source PNG,
+# the macrosofty-NN.jpg numbering will shift — re-stage with care.
+echo
+echo "[6/7] Desktop slideshow wallpapers..."
+SLIDESHOW_DIR="$SHARED/backgrounds/macrosofty"
+mkdir -p "$SLIDESHOW_DIR"
+
+# Logo overlay tuning (see preview iterations 2026-05-19/20):
+#   - 96x96 saffron arch at 50% opacity
+#   - gravity southeast, offset +55+55 (px from right / bottom)
+#   - 96x96 region blur (radius 14) under the logo to mask the sparkle
+LOGO_PX=96
+LOGO_OFFSET_X=55
+LOGO_OFFSET_Y=55
+TARGET_W=2560
+TARGET_H=1396
+BLUR_X=$(( TARGET_W - LOGO_OFFSET_X - LOGO_PX ))
+BLUR_Y=$(( TARGET_H - LOGO_OFFSET_Y - LOGO_PX ))
+
+idx=1
+for src in $(ls "$REPO_ROOT"/branding/Gemini_Generated_Image_*.png 2>/dev/null | sort); do
+    [ -f "$src" ] || continue
+    out=$(printf "%s/macrosofty-%02d.jpg" "$SLIDESHOW_DIR" "$idx")
+    magick "$src" \
+        -filter Lanczos -resize "${TARGET_W}x${TARGET_H}^" \
+        -gravity center -extent "${TARGET_W}x${TARGET_H}" \
+        -unsharp 0x0.75+0.5+0.008 \
+        -region "${LOGO_PX}x${LOGO_PX}+${BLUR_X}+${BLUR_Y}" -blur 0x30 +region \
+        \( "$LOGO_MASTER" -background none -resize "${LOGO_PX}x${LOGO_PX}" \
+           -alpha set -channel A -evaluate multiply 0.45 +channel \) \
+        -gravity southeast -geometry "+${LOGO_OFFSET_X}+${LOGO_OFFSET_Y}" -composite \
+        -quality 92 -strip "$out"
+    idx=$((idx + 1))
+done
+echo "  + $((idx - 1)) wallpapers regenerated at ${TARGET_W}x${TARGET_H} into /usr/share/backgrounds/macrosofty/"
+
+# --- 7. Plasma-setup "finished" wizard image -------------------------------
+# Upstream KDE's plasma-setup ships a 500x334 Konqi+Katie PNG at
+# /usr/share/plasma/packages/org.kde.plasmasetup.finished/contents/ui/
+# konqi-calling.png — visible on the "Completed!" screen after firstboot
+# setup. We overlay our own file at the same path so the OCI layer wins.
+# Two Tjoppers (wave on the left, heart on the right) at 280px tall on
+# a soft saffron radial-gradient glow, to match the original aspect and
+# add warmth in place of the upstream pure-white backdrop.
+echo
+echo "[7/7] Plasma-setup finished-wizard image..."
+PSETUP_DIR="$SHARED/plasma/packages/org.kde.plasmasetup.finished/contents/ui"
+mkdir -p "$PSETUP_DIR"
+magick \
+    \( -size 500x334 radial-gradient:'rgba(232,154,43,0.35)-rgba(232,154,43,0)' \) \
+    \( "$TJOPPER_SRC_DIR/tjopper-wave.svg"  -background none -resize 280x280 \) \
+    -gravity west -geometry +30+10 -composite \
+    \( "$TJOPPER_SRC_DIR/tjopper-heart.svg" -background none -resize 280x280 \) \
+    -gravity east -geometry +30+10 -composite \
+    -strip "$PSETUP_DIR/konqi-calling.png"
+echo "  + konqi-calling.png    (500x334   tjopper-wave + tjopper-heart on saffron glow)"
 
 # --- Done ------------------------------------------------------------------
 echo

@@ -145,7 +145,7 @@ install -d "${ROOTFS_DIR}/usr/share/anaconda/product.d"
 # Overlay pixmaps. Each cp follows the canonical asset's mode; mksquashfs
 # stores the new mtime which is fine.
 echo "[rebrand] overlaying anaconda pixmaps..."
-for png in anaconda_header.png anaconda_splash.png sidebar-bg.png sidebar-logo.png; do
+for png in anaconda_header.png anaconda_splash.png sidebar-bg.png sidebar-logo.png topbar-bg.png; do
     src="${ASSETS_DIR}/pixmaps/${png}"
     if [ -r "${src}" ]; then
         cp -f "${src}" "${ROOTFS_DIR}/usr/share/anaconda/pixmaps/${png}"

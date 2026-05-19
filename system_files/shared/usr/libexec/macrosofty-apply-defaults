@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#
+# Macrosofty first-login defaults — runs once per new user via an
+# autostart .desktop, configures the desktop + lock-screen wallpaper
+# slideshow, then deletes its own autostart entry and writes a guard
+# file.
+#
+# Why per-user instead of system-wide: Plasma 6 reads wallpaper config
+# from ~/.config/plasma-org.kde.plasma.desktop-appletsrc and the lock
+# screen from ~/.config/kscreenlockerrc. There's no clean system-wide
+# default that survives Plasma's first-run materialisation of those
+# files. The supported path is to set them per-user once, at first
+# login, against the running Plasma session — which is exactly what
+# this script does.
+
+set -euo pipefail
+
+GUARD="${XDG_CONFIG_HOME:-$HOME/.config}/macrosofty/defaults-applied"
+AUTOSTART="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/macrosofty-apply-defaults.desktop"
+
+SLIDESHOW_DIR=/usr/share/backgrounds/macrosofty
+SLIDESHOW_INTERVAL=600
+
+[ -f "$GUARD" ] && exit 0
+
+mkdir -p "$(dirname "$GUARD")"
+
+# --- Desktop wallpaper slideshow -------------------------------------------
+# Plasma's containment IDs aren't stable across sessions, so we ask the
+# running plasmashell to enumerate desktops and configure each one. This
+# is the same dbus interface KDE's own scripting tools use.
+if command -v qdbus6 >/dev/null 2>&1; then
+    QDBUS=qdbus6
+elif command -v qdbus >/dev/null 2>&1; then
+    QDBUS=qdbus
+else
+    QDBUS=""
+fi
+
+if [ -n "$QDBUS" ]; then
+    "$QDBUS" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
+        let allDesktops = desktops();
+        for (let i = 0; i < allDesktops.length; i++) {
+            let d = allDesktops[i];
+            d.wallpaperPlugin = 'org.kde.slideshow';
+            d.currentConfigGroup = ['Wallpaper', 'org.kde.slideshow', 'General'];
+            d.writeConfig('SlidePaths', '${SLIDESHOW_DIR}');
+            d.writeConfig('SlideInterval', ${SLIDESHOW_INTERVAL});
+            d.writeConfig('FillMode', 2);
+        }
+    " >/dev/null 2>&1 || true
+fi
+
+# --- Lock screen slideshow -------------------------------------------------
+# kscreenlockerrc is read fresh each time the locker starts, so we only
+# need to write it; no daemon reload required.
+if command -v kwriteconfig6 >/dev/null 2>&1; then
+    KWRITE=kwriteconfig6
+elif command -v kwriteconfig5 >/dev/null 2>&1; then
+    KWRITE=kwriteconfig5
+else
+    KWRITE=""
+fi
+
+if [ -n "$KWRITE" ]; then
+    "$KWRITE" --file kscreenlockerrc --group Greeter \
+        --key WallpaperPlugin org.kde.slideshow
+    "$KWRITE" --file kscreenlockerrc --group Greeter \
+        --group Wallpaper --group org.kde.slideshow --group General \
+        --key SlidePaths "${SLIDESHOW_DIR}"
+    "$KWRITE" --file kscreenlockerrc --group Greeter \
+        --group Wallpaper --group org.kde.slideshow --group General \
+        --key SlideInterval "${SLIDESHOW_INTERVAL}"
+fi
+
+touch "$GUARD"
+rm -f "$AUTOSTART"

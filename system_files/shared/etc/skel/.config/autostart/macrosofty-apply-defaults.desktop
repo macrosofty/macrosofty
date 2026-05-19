@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Macrosofty Apply Defaults
+Comment=One-shot first-login Plasma defaults (wallpaper + lock-screen slideshow)
+Exec=/usr/libexec/macrosofty-apply-defaults
+Icon=macrosofty
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-after=panel
+NoDisplay=true
+Terminal=false
+OnlyShowIn=KDE;
