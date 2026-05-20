@@ -29,26 +29,48 @@ mkdir -p "$(dirname "$GUARD")"
 # Plasma's containment IDs aren't stable across sessions, so we ask the
 # running plasmashell to enumerate desktops and configure each one. This
 # is the same dbus interface KDE's own scripting tools use.
-if command -v qdbus6 >/dev/null 2>&1; then
-    QDBUS=qdbus6
-elif command -v qdbus >/dev/null 2>&1; then
-    QDBUS=qdbus
-else
-    QDBUS=""
+#
+# The Qt6 qdbus on this Fedora/Aurora base is installed as `qdbus-qt6`
+# (NOT `qdbus6`), so check that name first — getting this wrong silently
+# skips the whole block and leaves Aurora's default wallpaper in place.
+QDBUS=""
+for cand in qdbus-qt6 qdbus6 qdbus /usr/lib64/qt6/bin/qdbus; do
+    if command -v "$cand" >/dev/null 2>&1; then
+        QDBUS="$cand"
+        break
+    fi
+done
+
+# Autostart can fire before plasmashell has registered on the session
+# bus. Wait (up to ~60s) for it, otherwise evaluateScript no-ops.
+if [ -n "$QDBUS" ]; then
+    for _ in $(seq 1 60); do
+        "$QDBUS" org.kde.plasmashell >/dev/null 2>&1 && break
+        sleep 1
+    done
 fi
 
+# SlidePaths must be written as a JS array for the slideshow plugin to
+# pick it up. SlideshowMode 1 = Alphabetical (A-Z) — the plugin defaults
+# to 0 (Random); we want a deterministic order. DESKTOP_OK gates the
+# guard file below: if this didn't succeed we leave the autostart entry
+# in place to retry next login.
+DESKTOP_OK=0
 if [ -n "$QDBUS" ]; then
-    "$QDBUS" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
+    if "$QDBUS" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
         let allDesktops = desktops();
         for (let i = 0; i < allDesktops.length; i++) {
             let d = allDesktops[i];
             d.wallpaperPlugin = 'org.kde.slideshow';
             d.currentConfigGroup = ['Wallpaper', 'org.kde.slideshow', 'General'];
-            d.writeConfig('SlidePaths', '${SLIDESHOW_DIR}');
+            d.writeConfig('SlidePaths', ['${SLIDESHOW_DIR}']);
             d.writeConfig('SlideInterval', ${SLIDESHOW_INTERVAL});
             d.writeConfig('FillMode', 2);
+            d.writeConfig('SlideshowMode', 1);
         }
-    " >/dev/null 2>&1 || true
+    " >/dev/null 2>&1; then
+        DESKTOP_OK=1
+    fi
 fi
 
 # --- Lock screen slideshow -------------------------------------------------
@@ -71,7 +93,17 @@ if [ -n "$KWRITE" ]; then
     "$KWRITE" --file kscreenlockerrc --group Greeter \
         --group Wallpaper --group org.kde.slideshow --group General \
         --key SlideInterval "${SLIDESHOW_INTERVAL}"
+    "$KWRITE" --file kscreenlockerrc --group Greeter \
+        --group Wallpaper --group org.kde.slideshow --group General \
+        --key SlideshowMode 1
 fi
 
-touch "$GUARD"
-rm -f "$AUTOSTART"
+# Only mark done + remove the autostart once the desktop wallpaper has
+# actually been applied. The lock-screen write above is plain file IO and
+# always succeeds if kwriteconfig is present; the desktop half needs a
+# live plasmashell, so if that failed we leave the autostart in place to
+# retry on the next login rather than burning the one-shot silently.
+if [ "$DESKTOP_OK" -eq 1 ]; then
+    touch "$GUARD"
+    rm -f "$AUTOSTART"
+fi
