@@ -67,7 +67,7 @@ echo
 # generate-logos.sh handles the freedesktop hicolor tree (16-512 px PNGs +
 # scalable SVG + pixmaps fallback). It also installs the canonical
 # /usr/share/macrosofty/logo.svg.
-echo "[1/7] Icon theme + scalable SVG (delegating to generate-logos.sh)..."
+echo "[1/8] Icon theme + scalable SVG (delegating to generate-logos.sh)..."
 "$REPO_ROOT/scripts/generate-logos.sh"
 
 # --- 2. Anaconda installer pixmaps -----------------------------------------
@@ -75,7 +75,7 @@ echo "[1/7] Icon theme + scalable SVG (delegating to generate-logos.sh)..."
 # The rebrand script overlays whatever we put here onto the upstream
 # Fedora installer rootfs.
 echo
-echo "[2/7] Anaconda installer pixmaps..."
+echo "[2/8] Anaconda installer pixmaps..."
 ANACONDA_DIR="$SHARED/anaconda/pixmaps"
 mkdir -p "$ANACONDA_DIR"
 
@@ -117,7 +117,7 @@ echo "  + sidebar-logo.png     (150x69     from logo-master.svg)"
 # Applied at OCI build time by `macrosofty-theme apply saffron` per
 # edition. Pack components are listed in pack.json next to these files.
 echo
-echo "[3/7] Macrosofty default theme pack..."
+echo "[3/8] Macrosofty default theme pack..."
 THEME_DIR="$SHARED/macrosofty/themes/saffron"
 mkdir -p "$THEME_DIR/plymouth"
 
@@ -143,7 +143,7 @@ echo "  + plymouth/logo.png        (identical to logo-256.png)"
 # them at runtime. anaconda-header.svg is rasterised above (step 2)
 # rather than copied; it is not used at runtime.
 echo
-echo "[4/7] Tjopper SVG library..."
+echo "[4/8] Tjopper SVG library..."
 TJOPPER_DEST="$SHARED/macrosofty/tjopper"
 mkdir -p "$TJOPPER_DEST"
 copied=0
@@ -165,7 +165,7 @@ echo "  + $copied SVGs copied to /usr/share/macrosofty/tjopper/"
 # at the target sizes — no inlining of the wave SVG into the bg, so a
 # future edit to tjopper-wave.svg flows through automatically.
 echo
-echo "[5/7] Macrosofty Tjopper theme pack..."
+echo "[5/8] Macrosofty Tjopper theme pack..."
 TJOPPER_THEME_DIR="$SHARED/macrosofty/themes/tjopper"
 mkdir -p "$TJOPPER_THEME_DIR"
 
@@ -192,7 +192,7 @@ echo "  + login-bg.png             (identical to wallpaper)"
 # Ordering: sorted by source filename. If you add/remove a source PNG,
 # the macrosofty-NN.jpg numbering will shift — re-stage with care.
 echo
-echo "[6/7] Desktop slideshow wallpapers..."
+echo "[6/8] Desktop slideshow wallpapers..."
 SLIDESHOW_DIR="$SHARED/backgrounds/macrosofty"
 mkdir -p "$SLIDESHOW_DIR"
 
@@ -234,7 +234,7 @@ echo "  + $((idx - 1)) wallpapers regenerated at ${TARGET_W}x${TARGET_H} into /u
 # a soft saffron radial-gradient glow, to match the original aspect and
 # add warmth in place of the upstream pure-white backdrop.
 echo
-echo "[7/7] Plasma-setup finished-wizard image..."
+echo "[7/8] Plasma-setup finished-wizard image..."
 PSETUP_DIR="$SHARED/plasma/packages/org.kde.plasmasetup.finished/contents/ui"
 mkdir -p "$PSETUP_DIR"
 magick \
@@ -245,6 +245,35 @@ magick \
     -gravity east -geometry +30+10 -composite \
     -strip "$PSETUP_DIR/konqi-calling.png"
 echo "  + konqi-calling.png    (500x334   tjopper-wave + tjopper-heart on saffron glow)"
+
+# --- 8. KSplash boot-to-desktop logo ---------------------------------------
+# KSplash is the logo shown between SDDM login and the Plasma desktop. It is
+# driven by the look-and-feel package named in each global theme's
+# [KSplash] Theme= default. Both Aurora global themes (dev.getaurora.aurora
+# AND dev.getaurora.auroralight) point at the SAME splash theme,
+# dev.getaurora.aurora — so one saffron logo covers light and dark. We
+# overlay our doorway at the package's images/aurora_logo.svgz; Splash.qml
+# loads it by that relative path and renders it centred on black at
+# gridUnit*8. Keeping it a vector svgz means it scales crisply on hidpi.
+# Upstream ships the .aurora and .auroralight copies byte-identical, so we
+# mirror into both — covers the edge case of a user hand-picking the
+# "Aurora (light)" splash theme in System Settings.
+echo
+echo "[8/8] KSplash boot logo..."
+KSPLASH_BASE="$SHARED/plasma/look-and-feel"
+TMP_SPLASH_SVG="$(mktemp --suffix=.svg)"
+# Set an explicit 375x375 (matching the file we replace) on the svg root
+# while keeping logo-master's 0 0 400 400 viewBox, so the doorway geometry
+# and centring carry over unchanged. -n keeps the gzip output deterministic
+# (no embedded filename/mtime) so re-runs are bit-equivalent.
+sed '0,/<svg /s//<svg width="375" height="375" /' "$LOGO_MASTER" > "$TMP_SPLASH_SVG"
+for theme in dev.getaurora.aurora dev.getaurora.auroralight; do
+    dest="$KSPLASH_BASE/$theme.desktop/contents/splash/images"
+    mkdir -p "$dest"
+    gzip -9 -n -c "$TMP_SPLASH_SVG" > "$dest/aurora_logo.svgz"
+    echo "  + $theme.desktop/.../aurora_logo.svgz  (375x375 saffron doorway from logo-master.svg)"
+done
+rm -f "$TMP_SPLASH_SVG"
 
 # --- Done ------------------------------------------------------------------
 echo

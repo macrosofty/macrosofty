@@ -14,11 +14,14 @@ FROM ghcr.io/ublue-os/aurora:stable
 
 ARG EDITION=padkos
 ARG MACROSOFTY_VERSION=0.1.0-dev
+# DEV-ONLY opt-in: `--build-arg DEV_SSHD=1` enables sshd + seeds the maintainer
+# key (see editions/padkos/build.sh). Default 0 — public CI never sets it.
+ARG DEV_SSHD=0
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/edition/build.sh
+    DEV_SSHD="${DEV_SSHD:-0}" /ctx/edition/build.sh
 
 RUN bootc container lint

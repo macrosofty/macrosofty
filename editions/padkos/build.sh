@@ -77,6 +77,25 @@ macrosofty-theme apply saffron
 # --- Scrub upstream branding from inherited menu items -----------------
 /ctx/scripts/scrub-upstream-branding.sh "$EDITION"
 
+# --- DEV ONLY (opt-in, default OFF): enable SSH + seed maintainer key -------
+# Activates ONLY when built with `--build-arg DEV_SSHD=1`. Public CI never sets
+# it, so public images ship WITHOUT sshd or the key. Opt in locally to debug a
+# freshly-flashed dev box with zero manual steps (Anaconda copies /etc/skel into
+# the user's home on account creation).
+# SECURITY: when enabled this ships SSH on AND a hardcoded authorized key on the
+# image. Keep it gated — the publish guard (publish-to-public.sh §2e) aborts if
+# these actions are ever made ungated/default-on.
+# Grep marker: MACROSOFTY_DEV_SSHD
+if [ "${DEV_SSHD:-0}" = "1" ]; then
+    echo "DEV_SSHD=1 — enabling sshd + seeding maintainer key (NOT for public images)"
+    systemctl enable sshd.service
+    install -d -m 0700 /etc/skel/.ssh
+    cat > /etc/skel/.ssh/authorized_keys <<'EOF'
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB/Ujmm3EKsqFPS1TjSiWN4uRYhUNUiVGimrA1EXnWkO bazzite
+EOF
+    chmod 0600 /etc/skel/.ssh/authorized_keys
+fi
+
 # --- Tidy the package metadata ----------------------------------------------
 dnf5 clean all
 
