@@ -12,8 +12,10 @@
     "logo": "logo-256.png",
     "motd": "motd",
     "grubDistributor": "Macrosofty",
+    "grubBackground": "wallpaper-1920x1080.png",
     "plymouthTheme": "plymouth/",
     "sddmBackground": "login-bg.png",
+    "defaultWallpaper": "macrosofty-01.jpg",
     "lookAndFeel": "lookandfeel/"
   }
 }

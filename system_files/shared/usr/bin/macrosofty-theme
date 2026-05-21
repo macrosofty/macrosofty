@@ -24,9 +24,15 @@
 #   loginBackground -> /usr/share/sddm/themes/breeze/Background.png (overlay)
 #   motd            -> /etc/motd
 #   grubDistributor -> /etc/default/grub.d/99-macrosofty.cfg (sets GRUB_DISTRIBUTOR)
+#   grubBackground  -> /usr/share/grub/themes/macrosofty/background.png +
+#                       /etc/default/grub.d/98-macrosofty-background.cfg
+
 #   plymouthTheme   -> /usr/share/plymouth/themes/macrosofty/ + plymouth-set-default-theme
 #                       + dracut --regenerate-all (skipped if no PNG/script in pack)
 #   sddmBackground  -> same image used in loginBackground; overlayed on breeze theme
+#   defaultWallpaper-> /usr/share/backgrounds/default.jxl (+ default-dark.jxl);
+#                       the system default the first-run setup wizard + fresh
+#                       sessions render against (overwrites the upstream symlink)
 #   lookAndFeel     -> /usr/share/plasma/look-and-feel/com.macrosofty.desktop/
 #                       (placeholder until we ship one)
 
@@ -159,6 +165,34 @@ apply_grub_distributor() {
     # set the source-of-truth here.
 }
 
+apply_grub_background() {
+    local pack_dir="$1" component="$2"
+    local src="$pack_dir/$component"
+    [ -f "$src" ] || { info "  skip GRUB background (not in pack)"; return 0; }
+
+    # GRUB renders a background when in graphics mode (gfxterm -- Fedora's
+    # default). Install a PNG into the immutable tree and point GRUB_BACKGROUND
+    # at it via a grub.d fragment. We ship a .png (GRUB's png module is
+    # near-universal; jpeg is not), and a dark wallpaper rather than a photo so
+    # the menu text stays readable on top.
+    #
+    # ATOMIC CAVEAT: on Fedora Atomic / bootc, /boot/grub2/grub.cfg is managed
+    # by bootupd + BLS and regenerates at deploy time, not here. This only sets
+    # the source-of-truth; whether it reaches the deployed grub.cfg MUST be
+    # boot-verified. Separate fragment (98-) from the GRUB_DISTRIBUTOR one
+    # (99-) so the two grub steps never clobber each other.
+    local dest_dir=/usr/share/grub/themes/macrosofty
+    mkdir -p "$dest_dir"
+    install -m 0644 "$src" "$dest_dir/background.png"
+
+    mkdir -p /etc/default/grub.d
+    cat > /etc/default/grub.d/98-macrosofty-background.cfg <<EOF
+GRUB_BACKGROUND="$dest_dir/background.png"
+GRUB_GFXMODE=auto
+EOF
+    info "  GRUB background -> $dest_dir/background.png (grub.cfg regenerates at deploy)"
+}
+
 apply_sddm_background() {
     local pack_dir="$1" component="$2"
     local src="$pack_dir/$component"
@@ -181,6 +215,50 @@ apply_sddm_background() {
 [Theme]
 Current=breeze
 EOF
+}
+
+apply_default_wallpaper() {
+    local pack_dir="$1" component="$2"
+    [ -n "$component" ] || { info "  skip default wallpaper (not in pack)"; return 0; }
+
+    # The first-run setup wizard + any fresh Plasma session render the SYSTEM
+    # DEFAULT wallpaper, wired upstream as /usr/share/backgrounds/default.jxl
+    # (+ default-dark.jxl, symlinked to an upstream image). Our other wallpaper
+    # steps only touch /usr/share/wallpapers/Macrosofty + the per-user slideshow
+    # (applied at first login, AFTER the wizard) -- so the wizard kept upstream
+    # art. Overwrite the default so login -> setup -> desktop is one image.
+    # Source is our slideshow image; the overlay installs it to
+    # /usr/share/backgrounds/macrosofty/ BEFORE this runs (fall back to pack dir).
+    local src=""
+    if [ -f "/usr/share/backgrounds/macrosofty/$component" ]; then
+        src="/usr/share/backgrounds/macrosofty/$component"
+    elif [ -f "$pack_dir/$component" ]; then
+        src="$pack_dir/$component"
+    else
+        info "  skip default wallpaper (source '$component' not found)"; return 0
+    fi
+
+    local bg_dir=/usr/share/backgrounds
+    [ -d "$bg_dir" ] || { info "  skip default wallpaper (no $bg_dir)"; return 0; }
+
+    # Upstream ships these as symlinks; replace with a real file. Aurora's
+    # folder.js writes Image=.../default.jxl into the desktop config, so the
+    # .jxl path is the one that matters. Qt sniffs image content (not the
+    # extension) so a JPEG at a .jxl path decodes; prefer a real JXL via cjxl
+    # when present. MUST be boot-verified.
+    local wrote=0
+    for name in default.jxl default-dark.jxl; do
+        local dest="$bg_dir/$name"
+        [ -e "$dest" ] || [ -L "$dest" ] || continue
+        rm -f "$dest"
+        if command -v cjxl >/dev/null 2>&1; then
+            cjxl "$src" "$dest" >/dev/null 2>&1 || cp -f "$src" "$dest"
+        else
+            cp -f "$src" "$dest"
+        fi
+        wrote=$((wrote + 1))
+    done
+    info "  default wallpaper -> $bg_dir/default.jxl (+dark): ${wrote} file(s) from $(basename "$src")"
 }
 
 apply_plymouth_theme() {
@@ -313,7 +391,7 @@ cmd_apply() {
 
     info "applying pack: $pack_name ($(jq -r '.displayName // .name' "$meta"))"
 
-    local kickoff wallpaper login motd grubdistro plymouth sddm laf
+    local kickoff wallpaper login motd grubdistro plymouth sddm laf defaultwp grubbg
     kickoff=$(jq -r '.components.kickoffIcon // empty' "$meta")
     wallpaper=$(jq -r '.components.wallpaper // empty' "$meta")
     login=$(jq -r '.components.loginBackground // empty' "$meta")
@@ -322,12 +400,16 @@ cmd_apply() {
     plymouth=$(jq -r '.components.plymouthTheme // empty' "$meta")
     sddm=$(jq -r '.components.sddmBackground // empty' "$meta")
     laf=$(jq -r '.components.lookAndFeel // empty' "$meta")
+    defaultwp=$(jq -r '.components.defaultWallpaper // empty' "$meta")
+    grubbg=$(jq -r '.components.grubBackground // empty' "$meta")
 
     [ -n "$kickoff" ]    && apply_kickoff_icon       "$pack_dir" "$kickoff"
     [ -n "$wallpaper" ]  && apply_wallpaper          "$pack_dir" "$wallpaper"
     [ -n "$motd" ]       && apply_motd               "$pack_dir" "$motd"
     [ -n "$grubdistro" ] && apply_grub_distributor   "$grubdistro"
+    [ -n "$grubbg" ]     && apply_grub_background     "$pack_dir" "$grubbg"
     [ -n "$sddm" ]       && apply_sddm_background    "$pack_dir" "$sddm"
+    [ -n "$defaultwp" ]  && apply_default_wallpaper  "$pack_dir" "$defaultwp"
     [ -n "$plymouth" ]   && apply_plymouth_theme     "$pack_dir" "$plymouth"
     [ -n "$laf" ]        && apply_lookandfeel        "$pack_dir" "$laf"
 
